@@ -39,6 +39,13 @@ jobs:
       - name: Build APK
         run: ./gradlew assembleRelease
 
+      - name: Setup sign tool version variable
+        shell: bash
+        run: |
+          BUILD_TOOL_VERSION=$(ls /usr/local/lib/android/sdk/build-tools/ | tail -n 1)
+          echo "ANDROID_SIGN_TOOL_VERSION=$BUILD_TOOL_VERSION" >> $GITHUB_ENV
+          echo Last build tool version is: $BUILD_TOOL_VERSION
+
       - name: Sign APK
         uses: r0adkll/sign-android-release@v1
         id: sign_apk
@@ -48,6 +55,9 @@ jobs:
           alias: ${{ secrets.ANDROID_ALIAS }}
           keyStorePassword: ${{ secrets.ANDROID_KEY_STORE_PASSWORD }}
           keyPassword: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        env:
+          # env.ANDROID_SIGN_TOOL_VERSION is set by Step "Setup sign tool version variable"
+          BUILD_TOOLS_VERSION: ${{ env.ANDROID_SIGN_TOOL_VERSION }}
 
       - name: Update
         uses: actions/upload-artifact@v4
