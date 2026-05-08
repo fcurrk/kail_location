@@ -305,7 +305,8 @@ fun SettingsScreen(
             EditTextPreference(
                 title = stringResource(R.string.setting_baidu_key),
                 value = baiduMapKey,
-                onValueChange = { viewModel.updateStringPreference(SettingsViewModel.KEY_BAIDU_MAP_KEY, it) }
+                onValueChange = { viewModel.updateStringPreference(SettingsViewModel.KEY_BAIDU_MAP_KEY, it) },
+                allowEmpty = true   // 允许清空
             )
 
             SwitchPreference(
@@ -380,7 +381,8 @@ fun EditTextPreference(
     title: String,
     value: String,
     onValueChange: (String) -> Unit,
-    description: String = ""
+    description: String = "",
+    allowEmpty: Boolean = false   // 新增参数
 ) {
     var showDialog by remember { mutableStateOf(false) }
 
@@ -419,7 +421,7 @@ fun EditTextPreference(
             confirmButton = {
                 TextButton(
                     onClick = {
-                        if (tempValue.isNotBlank()) {
+                        if (allowEmpty || tempValue.isNotBlank()) {
                             onValueChange(tempValue)
                         }
                         showDialog = false

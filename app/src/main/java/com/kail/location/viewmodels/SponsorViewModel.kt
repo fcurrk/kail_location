@@ -11,7 +11,8 @@ import android.graphics.Bitmap
 import kotlinx.coroutines.flow.update
 
 class SponsorViewModel : ViewModel() {
-    private val _address = MutableStateFlow("TVvudxmNTwzRFe3z7ts9srZE1srkqXgmxm")
+//    private val _address = MutableStateFlow("TVvudxmNTwzRFe3z7ts9srZE1srkqXgmxm")
+    private val _address = MutableStateFlow("OK")
     val address: StateFlow<String> = _address.asStateFlow()
 
     private val _qrBitmap = MutableStateFlow<Bitmap?>(null)
