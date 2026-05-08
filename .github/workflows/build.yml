@@ -55,6 +55,8 @@ jobs:
           alias: ${{ secrets.ANDROID_ALIAS }}
           keyStorePassword: ${{ secrets.ANDROID_KEY_STORE_PASSWORD }}
           keyPassword: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          inputReleaseFile: app/build/outputs/apk/release/app-release-unsigned-aligned.apk
+          outputReleaseFile: app/build/outputs/apk/release/kaillocation-release-signed.apk
         env:
           # env.ANDROID_SIGN_TOOL_VERSION is set by Step "Setup sign tool version variable"
           BUILD_TOOLS_VERSION: ${{ env.ANDROID_SIGN_TOOL_VERSION }}
@@ -62,6 +64,7 @@ jobs:
       - name: Update
         uses: actions/upload-artifact@v4
         with:
-          name: KailLocation-Release-unsigned
-          path: app/build/outputs/apk/release/*.apk
+          name: kaillocation-release
+          path: app/build/outputs/apk/release/kaillocation-release-signed.apk
           if-no-files-found: error
+          retention-days: 1
