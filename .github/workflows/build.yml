@@ -37,6 +37,8 @@ jobs:
         run: chmod +x gradlew
 
       - name: Build APK
+        env:
+          BAIDU_MAP_DEFAULT_KEY: ${{ secrets.BAIDU_MAP_DEFAULT_KEY }}
         run: ./gradlew assembleRelease
 
       - name: Setup sign tool version variable

@@ -18,6 +18,9 @@ android {
         versionCode = 28
         versionName = "1.5.1"
 
+        val defaultKey = System.getenv("BAIDU_MAP_DEFAULT_KEY") ?: ""
+        buildConfigField("String", "DEFAULT_BAIDU_MAP_KEY", "\"$defaultKey\"")
+
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         
         ndk {
