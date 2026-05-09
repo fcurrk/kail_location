@@ -31,7 +31,7 @@ import com.mini.location.views.joystick.JoystickWindowManager
 import kotlin.math.abs
 import kotlin.math.cos
 import com.mini.location.utils.MapUtils
-import com.minil.location.geo.GeoMath
+import com.mini.location.geo.GeoMath
 import com.mini.location.geo.GeoPredict
 
 class ServiceGoNoroot : Service() {
