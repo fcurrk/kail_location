@@ -4,7 +4,7 @@
     <string name="history_title">履歴</string>
     <string name="history_search_hint">履歴を検索</string>
     <string name="history_no_record">履歴はありません</string>
-    <string name="app_service_tips">KailLocation サービスを実行中</string>
+    <string name="app_service_tips">MiniLocation サービスを実行中</string>
     <string name="app_agreement">利用規約</string>
     <string name="app_privacy">プライバシーポリシー</string>
     <string name="app_agreement_privacy">利用規約とプライバシーポリシーを読み、同意しました</string>
@@ -126,7 +126,7 @@
 
     <string name="update_title">新しいバージョンがあります</string>
     <string name="update_downloading">更新ファイルをダウンロード中...</string>
-    <string name="update_last">KailLocation は最新です</string>
+    <string name="update_last">MiniLocation は最新です</string>
     <string name="update_download">今すぐダウンロード</string>
     <string name="update_ignore">今回は無視</string>
     <string name="update_time">更新日時：</string>

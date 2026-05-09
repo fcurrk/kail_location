@@ -8,11 +8,11 @@ plugins {
 }
 
 android {
-    namespace = "com.kail.location"
+    namespace = "com.mini.location"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.kail.location"
+        applicationId = "com.mini.location"
         minSdk = 27
         targetSdk = 36
         versionCode = 28

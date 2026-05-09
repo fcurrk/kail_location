@@ -5,7 +5,7 @@
     <string name="history_search_hint">搜尋歷史紀錄</string>
     <string name="history_no_record">暫無歷史紀錄</string>
     <string name="app_statement">僅供學習使用，否則後果自負！</string>
-    <string name="app_service_tips">KailLocation 服務正在執行</string>
+    <string name="app_service_tips">MiniLocation 服務正在執行</string>
     <string name="app_agreement">使用者協議</string>
     <string name="app_agreement_content">1. 本軟體僅供學習 Android 開發使用，不會收集任何使用者資料。\n2. 嚴禁利用本軟體侵犯他人隱私或用於遊戲牟利；若無法遵守，請立即刪除。\n3. 因使用本軟體所造成的一切不良後果，包括隱私外洩等，均由使用者自行承擔，作者不負任何責任。\n4. 使用者不得對本軟體進行反向工程、反編譯或反彙編，違者將承擔侵權責任與相關後果。\n5. 本軟體不保證絕對無病毒、木馬或其他惡意程式碼；由於軟體可能經由網路等途徑下載與散布，作者無法保證從非指定網站取得的版本完全安全，亦不承擔任何直接或間接損害責任。\n6. 本軟體會持續更新，提供新功能並修正 BUG；作者保證升級流程不含任何惡意程式碼。\n7. 由於不同使用者的硬體與軟體環境差異，本軟體提供的各項功能不保證在所有情況下都能正常運作或符合預期；使用者使用本軟體所產生的一切後果，作者概不負責。\n8. 若使用者自行安裝本軟體，即表示已信任作者並自願接受本協議全部條款；若不同意，請立即刪除本軟體。\n</string>
     <string name="app_privacy">隱私政策</string>
@@ -129,7 +129,7 @@
 
     <string name="update_title">有新版本可用</string>
     <string name="update_downloading">正在下載升級檔...</string>
-    <string name="update_last">恭喜，KailLocation 已是最新版</string>
+    <string name="update_last">恭喜，MiniLocation 已是最新版</string>
     <string name="update_download">立即下載</string>
     <string name="update_ignore">忽略一次</string>
     <string name="update_time">更新時間：</string>

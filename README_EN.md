@@ -2,13 +2,13 @@ Route & Location Simulation，
 Cadence simulation
 nfc simulation
 
-[App Download](https://play.google.com/store/apps/details?id=com.kail.location)
+[App Download](https://play.google.com/store/apps/details?id=com.mini.location)
 
 [Sensor parameters](传感器参数.md)
 
 [中文说明](README.md) | [English README](README_EN.md)
 
-The logs are located at /storage/emulated/0/Documents/KailLocation/logs/
+The logs are located at /storage/emulated/0/Documents/MiniLocation/logs/
 
 If you have feature requests, please open an issue.
 

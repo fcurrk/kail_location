@@ -4,7 +4,7 @@
     <string name="history_title">歷史紀錄</string>
     <string name="history_search_hint">搜尋歷史紀錄</string>
     <string name="history_no_record">暫無歷史紀錄</string>
-    <string name="app_service_tips">KailLocation 服務正在執行</string>
+    <string name="app_service_tips">MiniLocation 服務正在執行</string>
     <string name="app_agreement">使用者協議</string>
     <string name="app_privacy">隱私政策</string>
     <string name="app_agreement_privacy">我已閱讀並同意《使用者協議》和《隱私政策》</string>
@@ -126,7 +126,7 @@
 
     <string name="update_title">有新版本可用</string>
     <string name="update_downloading">正在下載升級檔...</string>
-    <string name="update_last">恭喜，KailLocation 已是最新版</string>
+    <string name="update_last">恭喜，MiniLocation 已是最新版</string>
     <string name="update_download">立即下載</string>
     <string name="update_ignore">忽略一次</string>
     <string name="update_time">更新時間：</string>

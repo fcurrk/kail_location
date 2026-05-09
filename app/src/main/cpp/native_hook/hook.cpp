@@ -285,7 +285,7 @@ static void install_convert_to_sensor_event_hook() {
 extern "C" {
 
 JNIEXPORT void JNICALL 
-Java_com_kail_location_xposed_core_FakeLocState_nativeSetWriteOffset(
+Java_com_mini_location_xposed_core_FakeLocState_nativeSetWriteOffset(
     JNIEnv* env, 
     jclass clazz, 
     jlong offset
@@ -294,7 +294,7 @@ Java_com_kail_location_xposed_core_FakeLocState_nativeSetWriteOffset(
 }
 
 JNIEXPORT void JNICALL 
-Java_com_kail_location_xposed_core_FakeLocState_nativeSetConvertOffset(
+Java_com_mini_location_xposed_core_FakeLocState_nativeSetConvertOffset(
     JNIEnv* env, 
     jclass clazz, 
     jlong offset
@@ -303,7 +303,7 @@ Java_com_kail_location_xposed_core_FakeLocState_nativeSetConvertOffset(
 }
 
 JNIEXPORT void JNICALL 
-Java_com_kail_location_xposed_core_FakeLocState_nativeSetRouteSimulation(
+Java_com_mini_location_xposed_core_FakeLocState_nativeSetRouteSimulation(
     JNIEnv* env, 
     jclass clazz, 
     jboolean active,
@@ -325,7 +325,7 @@ Java_com_kail_location_xposed_core_FakeLocState_nativeSetRouteSimulation(
 }
 
 JNIEXPORT void JNICALL 
-Java_com_kail_location_xposed_core_FakeLocState_nativeSetGaitParams(
+Java_com_mini_location_xposed_core_FakeLocState_nativeSetGaitParams(
     JNIEnv* env, 
     jclass clazz, 
     jfloat spm, 
@@ -337,7 +337,7 @@ Java_com_kail_location_xposed_core_FakeLocState_nativeSetGaitParams(
 }
 
 JNIEXPORT jboolean JNICALL 
-Java_com_kail_location_xposed_core_FakeLocState_nativeReloadConfig(
+Java_com_mini_location_xposed_core_FakeLocState_nativeReloadConfig(
     JNIEnv* env, 
     jclass clazz
 ) {
@@ -345,7 +345,7 @@ Java_com_kail_location_xposed_core_FakeLocState_nativeReloadConfig(
 }
 
 JNIEXPORT void JNICALL 
-Java_com_kail_location_xposed_core_FakeLocState_nativeSetMocking(
+Java_com_mini_location_xposed_core_FakeLocState_nativeSetMocking(
     JNIEnv* env, 
     jclass clazz, 
     jint mocking
@@ -354,7 +354,7 @@ Java_com_kail_location_xposed_core_FakeLocState_nativeSetMocking(
 }
 
 JNIEXPORT void JNICALL 
-Java_com_kail_location_xposed_core_FakeLocState_nativeSetAuthorized(
+Java_com_mini_location_xposed_core_FakeLocState_nativeSetAuthorized(
     JNIEnv* env, 
     jclass clazz, 
     jint authorized
@@ -363,7 +363,7 @@ Java_com_kail_location_xposed_core_FakeLocState_nativeSetAuthorized(
 }
 
 JNIEXPORT void JNICALL 
-Java_com_kail_location_xposed_core_FakeLocState_nativeSetStepSimEnabled(
+Java_com_mini_location_xposed_core_FakeLocState_nativeSetStepSimEnabled(
     JNIEnv* env, 
     jclass clazz, 
     jboolean enabled
@@ -372,7 +372,7 @@ Java_com_kail_location_xposed_core_FakeLocState_nativeSetStepSimEnabled(
 }
 
 JNIEXPORT void JNICALL 
-Java_com_kail_location_xposed_core_FakeLocState_nativeInitHook(
+Java_com_mini_location_xposed_core_FakeLocState_nativeInitHook(
     JNIEnv* env, 
     jclass clazz
 ) {
