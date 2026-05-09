@@ -16,7 +16,7 @@ android {
         minSdk = 27
         targetSdk = 36
         versionCode = 28
-        versionName = "261.5.1"
+        versionName = "1.5.1260509"
 
         val defaultKey = System.getenv("BAIDU_MAP_DEFAULT_KEY") ?: ""
         buildConfigField("String", "DEFAULT_BAIDU_MAP_KEY", "\"$defaultKey\"")
