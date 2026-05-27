@@ -116,7 +116,6 @@
 
         <activity
             android:name="com.mini.location.views.locationsimulation.LocationSimulationActivity"
-            android:label="@string/loc_sim_title"
             android:exported="true"
             android:theme="@style/AppTheme.NoActionBar"
             android:screenOrientation="portrait" >
