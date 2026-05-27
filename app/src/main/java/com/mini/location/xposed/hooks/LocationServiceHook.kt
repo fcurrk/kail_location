@@ -332,7 +332,7 @@ internal object LocationServiceHook: BaseLocationHook() {
                 kotlin.runCatching {
                     callOnLocationChanged()
                 }.onFailure {
-                    KailLog.e(null, "Kail_Xposed", "Pullback broadcast failed: ${it.message}")
+                    MiniLog.e(null, "Kail_Xposed", "Pullback broadcast failed: ${it.message}")
                 }
             }
             pullbackPushHandler.postDelayed(this, FakeLoc.reportIntervalMs.toLong())

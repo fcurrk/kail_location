@@ -1,4 +1,4 @@
-package com.kail.location.views.locationsimulation
+package com.mini.location.views.locationsimulation
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -23,22 +23,22 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import android.widget.ImageView
-import com.kail.location.R
-import com.kail.location.viewmodels.LocationSimulationViewModel
+import com.mini.location.R
+import com.mini.location.viewmodels.LocationSimulationViewModel
 import kotlinx.coroutines.launch
 import androidx.compose.ui.draw.scale
-import com.kail.location.views.common.DrawerHeader
+import com.mini.location.views.common.DrawerHeader
 import androidx.compose.ui.platform.LocalContext
 import android.content.Intent
 import android.net.Uri
-import com.kail.location.views.common.UpdateDialog
-import com.kail.location.models.HistoryRecord
+import com.mini.location.views.common.UpdateDialog
+import com.mini.location.models.HistoryRecord
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.clickable
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Delete
 
-import com.kail.location.views.common.AppDrawer
+import com.mini.location.views.common.AppDrawer
 
 /**
  * 位置模拟主界面组合项。

@@ -1,10 +1,10 @@
-package com.kail.location.utils
+package com.mini.location.utils
 
 import android.content.Context
 import android.net.Uri
 import android.util.Log
 import androidx.preference.PreferenceManager
-import com.kail.location.viewmodels.SettingsViewModel
+import com.mini.location.viewmodels.SettingsViewModel
 import java.io.File
 import java.io.FileOutputStream
 import java.lang.reflect.Method
@@ -13,12 +13,12 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.Executors
 
 /**
- * KailLog 专门用于日志输出与保存。
+ * MiniLog 专门用于日志输出与保存。
  * 默认不写文件；用户开启日志后写低频日志，开启详细调试后限流写高频日志。
  * 注意：避免使用 SimpleDateFormat，防止在 Xposed/系统线程中触发 ICU 相关崩溃。
  */
-object KailLog {
-    private const val TAG_PREFIX = "KailLog_"
+object MiniLog {
+    private const val TAG_PREFIX = "MiniLog_"
     private const val HIGH_FREQ_FILE_INTERVAL_MS = 1000L
     private const val MAX_THROTTLE_KEYS = 256
     private const val MAX_LOG_FILE_SIZE_BYTES = 2L * 1024L * 1024L
@@ -123,7 +123,7 @@ object KailLog {
         val stackTrace = Thread.currentThread().stackTrace
         for (i in 2 until stackTrace.size) {
             val frame = stackTrace[i]
-            if (frame.className != KailLog::class.java.name && !frame.className.contains("java.lang.Thread")) {
+            if (frame.className != MiniLog::class.java.name && !frame.className.contains("java.lang.Thread")) {
                 return callerCache.getOrPut(frame.className) { frame.fileName ?: "Unknown" }
             }
         }
@@ -147,7 +147,7 @@ object KailLog {
         logExecutor.execute {
             val ts = System.currentTimeMillis()
             val day = ts / 86_400_000L
-            val fileName = "kail_log_${day}.txt"
+            val fileName = "mini_log_${day}.txt"
             val logEntry = "${formatTime(ts)} [${level.uppercaseChar()}] [$tag]: $message\n"
 
             try {
@@ -238,7 +238,7 @@ object KailLog {
         val resolvedContext = context ?: resolveContext()
         if (resolvedContext == null || resolvedContext.packageName == "android") return emptyList()
         val dir = logDir(resolvedContext)
-        return dir.listFiles { file -> file.isFile && file.name.startsWith("kail_log_") }
+        return dir.listFiles { file -> file.isFile && file.name.startsWith("mini_log_") }
             ?.sortedBy { it.name }
             ?: emptyList()
     }

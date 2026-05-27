@@ -1,4 +1,4 @@
-package com.kail.location.utils
+package com.mini.location.utils
 
 import android.app.Application
 import com.baidu.location.LocationClient
@@ -6,12 +6,12 @@ import com.baidu.mapapi.CoordType
 import com.baidu.mapapi.SDKInitializer
 import androidx.preference.PreferenceManager
 import com.google.firebase.FirebaseApp
-import com.kail.location.R
+import com.mini.location.R
 
 class GoApplication : Application() {
 
     companion object {
-        const val APP_NAME = "KailLocation"
+        const val APP_NAME = "MiniLocation"
         private const val KEY_BAIDU_MAP_KEY = "setting_baidu_map_key"
     }
 
@@ -60,7 +60,7 @@ class GoApplication : Application() {
             SDKInitializer.initialize(this)
             SDKInitializer.setCoordType(CoordType.BD09LL)
         } catch (e: Throwable) {
-            KailLog.e(this, APP_NAME, "Baidu Map SDK init failed: ${e.message}")
+            MiniLog.e(this, APP_NAME, "Baidu Map SDK init failed: ${e.message}")
         }
     }
 }

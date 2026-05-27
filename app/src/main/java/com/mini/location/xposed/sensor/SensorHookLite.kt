@@ -1,11 +1,11 @@
-package com.kail.location.xposed.sensor
+package com.mini.location.xposed.sensor
 
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import de.robv.android.xposed.XC_MethodHook
 import de.robv.android.xposed.XposedBridge
 import de.robv.android.xposed.XposedHelpers
-import com.kail.location.xposed.core.FakeLocState
+import com.mini.location.xposed.core.FakeLocState
 import java.lang.reflect.Constructor
 import java.util.concurrent.ConcurrentHashMap
 

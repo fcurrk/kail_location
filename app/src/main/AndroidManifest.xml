@@ -55,7 +55,7 @@
     <uses-permission android:name="com.google.android.gms.permission.AD_ID" />
 
     <application
-        android:name="com.kail.location.utils.GoApplication"
+        android:name="com.mini.location.utils.GoApplication"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:requestLegacyExternalStorage="true"
@@ -91,12 +91,12 @@
         <service
             android:exported="false"
             android:foregroundServiceType="location"
-            android:name="com.kail.location.service.ServiceGoRoot" />
+            android:name="com.mini.location.service.ServiceGoRoot" />
 
         <service
             android:exported="false"
             android:foregroundServiceType="location"
-            android:name="com.kail.location.service.ServiceGoNoroot" />
+            android:name="com.mini.location.service.ServiceGoNoroot" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -109,13 +109,13 @@
         </provider>   
 
         <activity
-            android:name="com.kail.location.views.welcome.WelcomeActivity"
+            android:name="com.mini.location.views.welcome.WelcomeActivity"
             android:exported="true"
             android:theme="@style/AppTheme.NoActionBar"
             />
 
         <activity
-            android:name="com.kail.location.views.locationsimulation.LocationSimulationActivity"
+            android:name="com.mini.location.views.locationsimulation.LocationSimulationActivity"
             android:label="@string/loc_sim_title"
             android:exported="true"
             android:theme="@style/AppTheme.NoActionBar"
@@ -127,44 +127,44 @@
         </activity>
 
         <activity
-            android:name="com.kail.location.views.locationpicker.LocationPickerActivity"
+            android:name="com.mini.location.views.locationpicker.LocationPickerActivity"
             android:exported="false"
             android:theme="@style/AppTheme.NoActionBar" />
 
         <activity
-            android:name="com.kail.location.views.settings.SettingsActivity"
+            android:name="com.mini.location.views.settings.SettingsActivity"
             android:label="@string/app_settings"
             android:theme="@style/AppTheme.NoActionBar"
             android:exported="false" />
 
         <activity
-            android:name="com.kail.location.views.history.HistoryActivity"
+            android:name="com.mini.location.views.history.HistoryActivity"
             android:label="@string/app_history"
             android:exported="false" />
 
         <activity
-            android:name="com.kail.location.views.routesimulation.RouteSimulationActivity"
+            android:name="com.mini.location.views.routesimulation.RouteSimulationActivity"
             android:label="@string/nav_menu_route_simulation"
             android:exported="false"
             android:theme="@style/AppTheme.NoActionBar"
             android:screenOrientation="portrait" />
 
         <activity
-            android:name="com.kail.location.views.navigationsimulation.NavigationSimulationActivity"
+            android:name="com.mini.location.views.navigationsimulation.NavigationSimulationActivity"
             android:label="模拟导航"
             android:exported="false"
             android:theme="@style/AppTheme.NoActionBar"
             android:screenOrientation="portrait" />
 
         <activity
-            android:name="com.kail.location.views.sponsor.SponsorActivity"
+            android:name="com.mini.location.views.sponsor.SponsorActivity"
             android:label="@string/sponsor_title"
             android:exported="false"
             android:theme="@style/AppTheme.NoActionBar"
             android:screenOrientation="portrait" />
 
         <activity
-            android:name="com.kail.location.views.nfcsimulation.NfcSimulationActivity"
+            android:name="com.mini.location.views.nfcsimulation.NfcSimulationActivity"
             android:label="NFC模拟"
             android:exported="false"
             android:theme="@style/AppTheme.NoActionBar"

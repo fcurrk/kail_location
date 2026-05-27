@@ -1,4 +1,4 @@
-package com.kail.location.views.locationsimulation
+package com.mini.location.views.locationsimulation
 
 import android.Manifest
 import android.content.Intent
@@ -9,16 +9,16 @@ import androidx.activity.viewModels
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.core.app.ActivityCompat
-import com.kail.location.R
-import com.kail.location.views.base.BaseActivity
-import com.kail.location.viewmodels.LocationSimulationViewModel
-import com.kail.location.views.theme.locationTheme
-import com.kail.location.views.routesimulation.RouteSimulationActivity
-import com.kail.location.views.settings.SettingsActivity
+import com.mini.location.R
+import com.mini.location.views.base.BaseActivity
+import com.mini.location.viewmodels.LocationSimulationViewModel
+import com.mini.location.views.theme.locationTheme
+import com.mini.location.views.routesimulation.RouteSimulationActivity
+import com.mini.location.views.settings.SettingsActivity
 import android.widget.Toast
 
-import com.kail.location.views.locationpicker.LocationPickerActivity
-import com.kail.location.views.navigationsimulation.NavigationSimulationActivity
+import com.mini.location.views.locationpicker.LocationPickerActivity
+import com.mini.location.views.navigationsimulation.NavigationSimulationActivity
 
 
 /**
@@ -82,13 +82,13 @@ class LocationSimulationActivity : BaseActivity() {
                                 startActivity(Intent(this, NavigationSimulationActivity::class.java))
                             }
                             R.id.nav_nfc_simulation -> {
-                                startActivity(Intent(this, com.kail.location.views.nfcsimulation.NfcSimulationActivity::class.java))
+                                startActivity(Intent(this, com.mini.location.views.nfcsimulation.NfcSimulationActivity::class.java))
                             }
                             R.id.nav_settings -> {
                                 startActivity(Intent(this, SettingsActivity::class.java))
                             }
                             R.id.nav_sponsor -> {
-                                startActivity(Intent(this, com.kail.location.views.sponsor.SponsorActivity::class.java))
+                                startActivity(Intent(this, com.mini.location.views.sponsor.SponsorActivity::class.java))
                             }
                             R.id.nav_dev -> {
                                 try {

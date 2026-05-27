@@ -8,15 +8,17 @@ plugins {
 }
 
 android {
-    namespace = "com.kail.location"
+    namespace = "com.mini.location"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.kail.location"
+        applicationId = "com.mini.location"
         minSdk = 27
         targetSdk = 36
         versionCode = 32
-        versionName = "1.5.9"
+        versionName = "1.5.9260527"
+        val defaultKey = System.getenv("BAIDU_MAP_DEFAULT_KEY") ?: ""
+        buildConfigField("String", "DEFAULT_BAIDU_MAP_KEY", "\"$defaultKey\"")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         

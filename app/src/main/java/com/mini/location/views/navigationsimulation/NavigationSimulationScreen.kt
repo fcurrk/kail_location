@@ -1,4 +1,4 @@
-package com.kail.location.views.navigationsimulation
+package com.mini.location.views.navigationsimulation
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -23,8 +23,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.kail.location.R
-import com.kail.location.viewmodels.NavigationSimulationViewModel
+import com.mini.location.R
+import com.mini.location.viewmodels.NavigationSimulationViewModel
 import androidx.compose.material.icons.filled.Place
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -35,10 +35,10 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.IntOffset
-import com.kail.location.views.locationpicker.LocationPickerActivity
+import com.mini.location.views.locationpicker.LocationPickerActivity
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.text.input.KeyboardType
-import com.kail.location.views.common.AppDrawer
+import com.mini.location.views.common.AppDrawer
 import kotlinx.coroutines.launch
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties

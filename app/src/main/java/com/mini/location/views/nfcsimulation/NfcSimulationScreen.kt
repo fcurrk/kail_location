@@ -1,4 +1,4 @@
-package com.kail.location.views.nfcsimulation
+package com.mini.location.views.nfcsimulation
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -22,8 +22,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.sp
-import com.kail.location.R
-import com.kail.location.views.common.AppDrawer
+import com.mini.location.R
+import com.mini.location.views.common.AppDrawer
 import android.widget.Toast
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat

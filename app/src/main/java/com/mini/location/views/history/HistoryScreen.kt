@@ -1,4 +1,4 @@
-package com.kail.location.views.history
+package com.mini.location.views.history
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -21,9 +21,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.kail.location.models.HistoryRecord
-import com.kail.location.viewmodels.HistoryViewModel
-import com.kail.location.R
+import com.mini.location.models.HistoryRecord
+import com.mini.location.viewmodels.HistoryViewModel
+import com.mini.location.R
 
 /**
  * 历史记录屏幕组合项。

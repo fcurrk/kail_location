@@ -1,4 +1,4 @@
-package com.kail.location.views.settings
+package com.mini.location.views.settings
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -20,10 +20,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.kail.location.R
-import com.kail.location.utils.KailLog
-import com.kail.location.viewmodels.SettingsViewModel
-import com.kail.location.xposed.core.FakeLocState
+import com.mini.location.R
+import com.mini.location.utils.MiniLog
+import com.mini.location.viewmodels.SettingsViewModel
+import com.mini.location.xposed.core.FakeLocState
 
 /**
  * 设置屏幕主界面
@@ -40,20 +40,20 @@ fun SettingsScreen(
 ) {
     val scrollState = rememberScrollState()
     val context = LocalContext.current
-    var logCacheSize by remember { mutableStateOf(KailLog.getLogCacheSizeBytes(context)) }
+    var logCacheSize by remember { mutableStateOf(MiniLog.getLogCacheSizeBytes(context)) }
     var showClearLogDialog by remember { mutableStateOf(false) }
     val exportLogLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.CreateDocument("text/plain")
     ) { uri ->
         if (uri != null) {
-            val ok = KailLog.exportLogs(context, uri)
+            val ok = MiniLog.exportLogs(context, uri)
             android.widget.Toast.makeText(
                 context,
                 if (ok) context.getString(R.string.setting_export_log_success) else context.getString(R.string.setting_export_log_failed),
                 android.widget.Toast.LENGTH_SHORT
             ).show()
         }
-        logCacheSize = KailLog.getLogCacheSizeBytes(context)
+        logCacheSize = MiniLog.getLogCacheSizeBytes(context)
     }
 
     // State observation
@@ -335,7 +335,8 @@ fun SettingsScreen(
             EditTextPreference(
                 title = stringResource(R.string.setting_baidu_key),
                 value = baiduMapKey,
-                onValueChange = { viewModel.updateStringPreference(SettingsViewModel.KEY_BAIDU_MAP_KEY, it) }
+                onValueChange = { viewModel.updateStringPreference(SettingsViewModel.KEY_BAIDU_MAP_KEY, it) },
+                allowEmpty = true   // 允许清空
             )
 
             SwitchPreference(
@@ -355,14 +356,14 @@ fun SettingsScreen(
             ActionPreference(
                 title = stringResource(R.string.setting_export_log),
                 summary = stringResource(R.string.setting_export_log_summary),
-                onClick = { exportLogLauncher.launch("kail_location_logs.txt") }
+                onClick = { exportLogLauncher.launch("mini_location_logs.txt") }
             )
 
             ActionPreference(
                 title = stringResource(R.string.setting_clear_log_cache),
                 summary = stringResource(R.string.setting_clear_log_cache_summary, formatBytes(logCacheSize)),
                 onClick = {
-                    logCacheSize = KailLog.getLogCacheSizeBytes(context)
+                    logCacheSize = MiniLog.getLogCacheSizeBytes(context)
                     showClearLogDialog = true
                 }
             )
@@ -395,8 +396,8 @@ fun SettingsScreen(
             confirmButton = {
                 TextButton(
                     onClick = {
-                        val ok = KailLog.clearLogCache(context)
-                        logCacheSize = KailLog.getLogCacheSizeBytes(context)
+                        val ok = MiniLog.clearLogCache(context)
+                        logCacheSize = MiniLog.getLogCacheSizeBytes(context)
                         showClearLogDialog = false
                         android.widget.Toast.makeText(
                             context,
@@ -480,7 +481,8 @@ fun EditTextPreference(
     title: String,
     value: String,
     onValueChange: (String) -> Unit,
-    description: String = ""
+    description: String = "",
+    allowEmpty: Boolean = false   // 新增参数
 ) {
     var showDialog by remember { mutableStateOf(false) }
 
@@ -519,7 +521,7 @@ fun EditTextPreference(
             confirmButton = {
                 TextButton(
                     onClick = {
-                        if (tempValue.isNotBlank()) {
+                        if (allowEmpty || tempValue.isNotBlank()) {
                             onValueChange(tempValue)
                         }
                         showDialog = false

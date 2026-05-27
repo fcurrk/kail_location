@@ -196,11 +196,11 @@ internal object KailCommandHandler {
                     }
                     out.getBoolean("enableFileLog", FakeLoc.enableLog).let {
                         FakeLoc.enableLog = it
-                        KailLog.fileLogEnabled = it
+                        MiniLog.fileLogEnabled = it
                     }
                     out.getBoolean("enableDebugLog", FakeLoc.enableDebugLog).let {
                         FakeLoc.enableDebugLog = it
-                        KailLog.detailedLogEnabled = it
+                        MiniLog.detailedLogEnabled = it
                     }
                     out.putBoolean("ok", true)
                     MiniLog.d(null, "XPOSED", "KAIL接收：批量配置更新")
