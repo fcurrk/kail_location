@@ -1,5 +1,6 @@
 package com.mini.location.utils
 
+import com.mini.location.BuildConfig
 import android.app.Application
 import com.baidu.location.LocationClient
 import com.baidu.mapapi.CoordType
@@ -52,11 +53,15 @@ class GoApplication : Application() {
         LocationClient.setAgreePrivacy(true)
 
         try {
-            val customKey = prefs.getString(KEY_BAIDU_MAP_KEY, "")
-            if (!customKey.isNullOrEmpty()) {
-                SDKInitializer.setApiKey(customKey)
-                LocationClient.setKey(customKey)
+
+            val userKey = prefs.getString(KEY_BAIDU_MAP_KEY, "")
+            val finalKey = if (userKey.isNullOrBlank()) {
+                BuildConfig.DEFAULT_BAIDU_MAP_KEY
+            } else {
+                userKey
             }
+            SDKInitializer.setApiKey(finalKey)
+            LocationClient.setKey(finalKey)
             SDKInitializer.initialize(this)
             SDKInitializer.setCoordType(CoordType.BD09LL)
         } catch (e: Throwable) {
