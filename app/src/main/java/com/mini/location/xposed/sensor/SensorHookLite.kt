@@ -1,17 +1,19 @@
-package com.mini.location.xposed.sensor
+package com.kail.location.xposed.sensor
 
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import de.robv.android.xposed.XC_MethodHook
 import de.robv.android.xposed.XposedBridge
 import de.robv.android.xposed.XposedHelpers
-import com.mini.location.xposed.core.FakeLocState
+import com.kail.location.xposed.core.FakeLocState
+import java.lang.reflect.Constructor
 import java.util.concurrent.ConcurrentHashMap
 
 internal object SensorHookLite {
     private val stepListeners = ConcurrentHashMap.newKeySet<Any>()
     @Volatile private var sensorRef: Sensor? = null
     @Volatile private var stepThread: Thread? = null
+    @Volatile private var sensorEventConstructor: Constructor<*>? = null
 
     fun hook(classLoader: ClassLoader) {
         val cSSM = XposedHelpers.findClassIfExists("android.hardware.SystemSensorManager", classLoader) ?: return
@@ -85,9 +87,12 @@ internal object SensorHookLite {
     }
 
     private fun createEvent(sensor: Sensor): SensorEvent {
-        val c = XposedHelpers.findClass("android.hardware.SensorEvent", sensor.javaClass.classLoader)
-        val cons = c.getDeclaredConstructor(Int::class.javaPrimitiveType)
-        cons.isAccessible = true
+        val cons = sensorEventConstructor ?: synchronized(this) {
+            sensorEventConstructor ?: XposedHelpers.findClass("android.hardware.SensorEvent", sensor.javaClass.classLoader)
+                .getDeclaredConstructor(Int::class.javaPrimitiveType)
+                .apply { isAccessible = true }
+                .also { sensorEventConstructor = it }
+        }
         val ev = cons.newInstance(1) as SensorEvent
         XposedHelpers.setObjectField(ev, "sensor", sensor)
         return ev

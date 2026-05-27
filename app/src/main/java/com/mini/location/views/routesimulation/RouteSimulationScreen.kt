@@ -1,4 +1,4 @@
-package com.mini.location.views.routesimulation
+package com.kail.location.views.routesimulation
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -25,18 +25,18 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.viewinterop.AndroidView
 import android.widget.ImageView
 import kotlinx.coroutines.launch
-import com.mini.location.models.RouteInfo
-import com.mini.location.models.SimulationSettings
-import com.mini.location.models.TransportMode
-import com.mini.location.R
-import com.mini.location.viewmodels.RouteSimulationViewModel
-import com.mini.location.views.common.DrawerHeader
+import com.kail.location.models.RouteInfo
+import com.kail.location.models.SimulationSettings
+import com.kail.location.models.TransportMode
+import com.kail.location.R
+import com.kail.location.viewmodels.RouteSimulationViewModel
+import com.kail.location.views.common.DrawerHeader
 
 import androidx.compose.ui.platform.LocalContext
 import android.content.Intent
 import android.net.Uri
-import com.mini.location.views.common.UpdateDialog
-import com.mini.location.views.common.AppDrawer
+import com.kail.location.views.common.UpdateDialog
+import com.kail.location.views.common.AppDrawer
 
 
 /**
@@ -92,7 +92,7 @@ fun RouteSimulationScreen(
     }
     
     if (updateInfo != null) {
-        com.mini.location.views.common.UpdateDownloadDialog(
+        com.kail.location.views.common.UpdateDownloadDialog(
             info = updateInfo!!,
             downloading = isDownloading,
             progress = downloadProgress,
@@ -134,7 +134,7 @@ fun RouteSimulationScreen(
                 TopAppBar(
                     title = { Text(stringResource(R.string.route_sim_title)) },
                     navigationIcon = {
-                        IconButton(onClick = { scope.launch { drawerState.open() } }) {
+                        IconButton(onClick = { scope.launch { drawerState.animateTo(DrawerValue.Open, androidx.compose.animation.core.tween(durationMillis = 160)) } }) {
                             Icon(
                                 imageVector = Icons.Default.Menu,
                                 contentDescription = "Menu",
@@ -230,11 +230,6 @@ fun RouteSimulationScreen(
                                     }
                                 }
                             }
-                        }
-                        item {
-                            com.mini.location.ads.NativeAdCard(
-                                modifier = Modifier.padding(top = 8.dp)
-                            )
                         }
                     }
                 }

@@ -1,4 +1,4 @@
-package com.mini.location.service
+package com.kail.location.service
 
 import android.annotation.SuppressLint
 import android.app.Notification
@@ -22,17 +22,17 @@ import androidx.preference.PreferenceManager
 import com.baidu.mapapi.model.LatLng
 import android.widget.Toast
 import android.util.Log
-import com.mini.location.views.locationpicker.LocationPickerActivity
-import com.mini.location.R
-import com.mini.location.utils.GoUtils
-import com.mini.location.utils.MiniLog
-import com.mini.location.viewmodels.JoystickViewModel
-import com.mini.location.views.joystick.JoystickWindowManager
+import com.kail.location.views.locationpicker.LocationPickerActivity
+import com.kail.location.R
+import com.kail.location.utils.GoUtils
+import com.kail.location.utils.KailLog
+import com.kail.location.viewmodels.JoystickViewModel
+import com.kail.location.views.joystick.JoystickWindowManager
 import kotlin.math.abs
 import kotlin.math.cos
-import com.mini.location.utils.MapUtils
-import com.mini.location.geo.GeoMath
-import com.mini.location.geo.GeoPredict
+import com.kail.location.utils.MapUtils
+import com.kail.location.geo.GeoMath
+import com.kail.location.geo.GeoPredict
 
 class ServiceGoRoot : Service() {
     private var mCurLat = DEFAULT_LAT
@@ -77,6 +77,7 @@ class ServiceGoRoot : Service() {
         const val DEFAULT_BEA = 0.0f
 
         private const val HANDLER_MSG_ID = 0
+        private const val DEFAULT_LOCATION_UPDATE_INTERVAL_MS = 200L
         private const val SERVICE_GO_HANDLER_NAME = "ServiceGoRootLocation"
 
         private const val SERVICE_GO_NOTE_ID = 1
@@ -105,7 +106,7 @@ class ServiceGoRoot : Service() {
         const val COORD_BD09 = "BD09"
         const val COORD_GCJ02 = "GCJ02"
 
-        const val ACTION_STATUS_CHANGED = "com.mini.location.service.STATUS_CHANGED"
+        const val ACTION_STATUS_CHANGED = "com.kail.location.service.STATUS_CHANGED"
         const val EXTRA_IS_SIMULATING = "is_simulating"
         const val EXTRA_IS_PAUSED = "is_paused"
         private const val KAIL_PROVIDER = "kail"
@@ -125,31 +126,31 @@ class ServiceGoRoot : Service() {
 
     override fun onCreate() {
         super.onCreate()
-        MiniLog.i(this, "ServiceGoRoot", "onCreate started")
+        KailLog.i(this, "ServiceGoRoot", "onCreate started")
         
         try {
-            MiniLog.i(this, "ServiceGoRoot", "1. initNotification")
+            KailLog.i(this, "ServiceGoRoot", "1. initNotification")
             initNotification()
         } catch (e: Throwable) {
-            MiniLog.e(this, "ServiceGoRoot", "Error in initNotification: ${e.message}")
+            KailLog.e(this, "ServiceGoRoot", "Error in initNotification: ${e.message}")
         }
 
         try {
-            MiniLog.i(this, "ServiceGoRoot", "2. init LocationManager")
+            KailLog.i(this, "ServiceGoRoot", "2. init LocationManager")
             mLocManager = this.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         } catch (e: Throwable) {
-            MiniLog.e(this, "ServiceGoRoot", "Error in LocationManager init: ${e.message}")
+            KailLog.e(this, "ServiceGoRoot", "Error in LocationManager init: ${e.message}")
         }
 
         try {
-            MiniLog.i(this, "ServiceGoRoot", "3. initGoLocation")
+            KailLog.i(this, "ServiceGoRoot", "3. initGoLocation")
             initGoLocation()
         } catch (e: Throwable) {
-            MiniLog.e(this, "ServiceGoRoot", "Error in initGoLocation: ${e.message}")
+            KailLog.e(this, "ServiceGoRoot", "Error in initGoLocation: ${e.message}")
         }
             
         try {
-            MiniLog.i(this, "ServiceGoRoot", "4. initJoyStick")
+            KailLog.i(this, "ServiceGoRoot", "4. initJoyStick")
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
                 GoUtils.DisplayToast(applicationContext, getString(R.string.service_grant_overlay))
             }
@@ -164,12 +165,12 @@ class ServiceGoRoot : Service() {
                 mJoystickManager.hide()
             }
         } catch (e: Throwable) {
-            MiniLog.e(this, "ServiceGoRoot", "Error initializing JoyStick: ${e.message}")
+            KailLog.e(this, "ServiceGoRoot", "Error initializing JoyStick: ${e.message}")
             GoUtils.DisplayToast(applicationContext, getString(R.string.service_overlay_failed, e.message))
         }
 
         broadcastStatus()
-        MiniLog.i(this, "ServiceGoRoot", "onCreate finished")
+        KailLog.i(this, "ServiceGoRoot", "onCreate finished")
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -184,9 +185,9 @@ class ServiceGoRoot : Service() {
                                 mJoystickManager.setRoutePauseState(true)
                             }
                             broadcastStatus()
-                            MiniLog.log(this, "ServiceGoRoot", "Paused simulation (isStop=true)", isHighFrequency = false)
+                            KailLog.log(this, "ServiceGoRoot", "Paused simulation (isStop=true)", isHighFrequency = false)
                         } catch (e: Exception) {
-                            MiniLog.log(this, "ServiceGoRoot", "Pause error: ${e.message}", isHighFrequency = false)
+                            KailLog.log(this, "ServiceGoRoot", "Pause error: ${e.message}", isHighFrequency = false)
                         }
                         return super.onStartCommand(intent, flags, startId)
                     }
@@ -199,9 +200,9 @@ class ServiceGoRoot : Service() {
                              kailSend("set_step_enabled") { putBoolean("enabled", stepEnabledCache); putInt("scheme", simSchemeCache) }
                              kailSend("set_step_sim_enabled") { putBoolean("enabled", stepSimEnabledCache) }
                              broadcastStatus()
-                            MiniLog.log(this, "ServiceGoRoot", "Resumed simulation (isStop=false)", isHighFrequency = false)
+                            KailLog.log(this, "ServiceGoRoot", "Resumed simulation (isStop=false)", isHighFrequency = false)
                         } catch (e: Exception) {
-                            MiniLog.log(this, "ServiceGoRoot", "Resume error: ${e.message}", isHighFrequency = false)
+                            KailLog.log(this, "ServiceGoRoot", "Resume error: ${e.message}", isHighFrequency = false)
                         }
                         return super.onStartCommand(intent, flags, startId)
                     }
@@ -209,9 +210,9 @@ class ServiceGoRoot : Service() {
                         try {
                             stopSelf()
                             broadcastStatus()
-                            MiniLog.i(this, "ServiceGoRoot", "stopSelf via control action")
+                            KailLog.i(this, "ServiceGoRoot", "stopSelf via control action")
                         } catch (e: Exception) {
-                            MiniLog.e(this, "ServiceGoRoot", "stop error: ${e.message}")
+                            KailLog.e(this, "ServiceGoRoot", "stop error: ${e.message}")
                         }
                         return super.onStartCommand(intent, flags, startId)
                     }
@@ -249,10 +250,10 @@ class ServiceGoRoot : Service() {
                                 mCurLat = a.second + dLatDeg * f
                                 mCurBea = GeoMath.bearingDegrees(a.first, a.second, b.first, b.second)
                                 updateJoystickStatus()
-                                MiniLog.i(this, "ServiceGoRoot", "seek to ratio=$ratio index=$mRouteIndex progress=$mSegmentProgressMeters")
+                                KailLog.i(this, "ServiceGoRoot", "seek to ratio=$ratio index=$mRouteIndex progress=$mSegmentProgressMeters")
                             }
                         } catch (e: Exception) {
-                            MiniLog.e(this, "ServiceGoRoot", "seek error: ${e.message}")
+                            KailLog.e(this, "ServiceGoRoot", "seek error: ${e.message}")
                         }
                         return super.onStartCommand(intent, flags, startId)
                     }
@@ -262,18 +263,18 @@ class ServiceGoRoot : Service() {
                             mSpeed = kmh.toDouble() / 3.6
                             kailStartIfNeeded()
                             kailSend("set_speed") { putFloat("speed", mSpeed.toFloat()) }
-                            MiniLog.i(this, "ServiceGoRoot", "speed updated to km/h=$kmh m/s=$mSpeed")
+                            KailLog.i(this, "ServiceGoRoot", "speed updated to km/h=$kmh m/s=$mSpeed")
                         } catch (e: Exception) {
-                            MiniLog.e(this, "ServiceGoRoot", "set_speed error: ${e.message}")
+                            KailLog.e(this, "ServiceGoRoot", "set_speed error: ${e.message}")
                         }
                         return super.onStartCommand(intent, flags, startId)
                     }
                     CONTROL_SET_SPEED_FLUCTUATION -> {
                         try {
                             speedFluctuation = intent.getBooleanExtra(EXTRA_SPEED_FLUCTUATION, speedFluctuation)
-                            MiniLog.i(this, "ServiceGoRoot", "speedFluctuation updated to $speedFluctuation")
+                            KailLog.i(this, "ServiceGoRoot", "speedFluctuation updated to $speedFluctuation")
                         } catch (e: Exception) {
-                            MiniLog.e(this, "ServiceGoRoot", "set_speed_fluctuation error: ${e.message}")
+                            KailLog.e(this, "ServiceGoRoot", "set_speed_fluctuation error: ${e.message}")
                         }
                         return super.onStartCommand(intent, flags, startId)
                     }
@@ -285,9 +286,9 @@ class ServiceGoRoot : Service() {
                              kailSend("set_step_enabled") { putBoolean("enabled", stepEnabledCache); putInt("scheme", simSchemeCache) }
                              kailSend("set_step_cadence") { putFloat("cadence", stepFreqCache.toFloat()) }
                              kailSend("set_step_sim_enabled") { putBoolean("enabled", stepSimEnabledCache) }
-                            MiniLog.i(this, "ServiceGoRoot", "step simulation updated: enabled=$stepEnabledCache, freq=$stepFreqCache")
+                            KailLog.i(this, "ServiceGoRoot", "step simulation updated: enabled=$stepEnabledCache, freq=$stepFreqCache")
                         } catch (e: Exception) {
-                            MiniLog.e(this, "ServiceGoRoot", "set_step error: ${e.message}")
+                            KailLog.e(this, "ServiceGoRoot", "set_step error: ${e.message}")
                         }
                         return super.onStartCommand(intent, flags, startId)
                     }
@@ -318,7 +319,7 @@ class ServiceGoRoot : Service() {
                     }
                 }
             } catch (e: Exception) {
-                MiniLog.e(this, "ServiceGoRoot", "Error in onStartCommand initNotification: ${e.message}")
+                KailLog.e(this, "ServiceGoRoot", "Error in onStartCommand initNotification: ${e.message}")
             }
         }
 
@@ -370,7 +371,7 @@ class ServiceGoRoot : Service() {
                 calculateRouteDistances()
             }
             
-            MiniLog.i(this, "ServiceGoRoot", "onStartCommand received lat=$mCurLat, lng=$mCurLng")
+            KailLog.i(this, "ServiceGoRoot", "onStartCommand received lat=$mCurLat, lng=$mCurLng")
 
             if (this::mLocHandler.isInitialized) {
                 mLocHandler.post {
@@ -401,7 +402,7 @@ class ServiceGoRoot : Service() {
                         mJoystickManager.hide()
                     }
                 } catch (e: Exception) {
-                    MiniLog.e(this, "ServiceGoRoot", "Error setting current position or showing joystick: ${e.message}")
+                    KailLog.e(this, "ServiceGoRoot", "Error setting current position or showing joystick: ${e.message}")
                 }
             }
         }
@@ -410,7 +411,7 @@ class ServiceGoRoot : Service() {
     }
 
     override fun onDestroy() {
-        MiniLog.i(this, "ServiceGoRoot", "onDestroy started")
+        KailLog.i(this, "ServiceGoRoot", "onDestroy started")
         try {
             if (kailStarted) {
                 kailSend("set_route_simulation") {
@@ -418,7 +419,7 @@ class ServiceGoRoot : Service() {
                     putFloat("spm", 120f)
                     putInt("mode", 0)
                 }
-                MiniLog.i(this, "ServiceGoRoot", ">>> Sent route simulation stop")
+                KailLog.i(this, "ServiceGoRoot", ">>> Sent route simulation stop")
             }
             
             val intent = Intent(ACTION_STATUS_CHANGED)
@@ -429,10 +430,10 @@ class ServiceGoRoot : Service() {
 
             isStop = true
             if (this::mLocHandler.isInitialized) {
-                mLocHandler.removeMessages(HANDLER_MSG_ID)
+                mLocHandler.removeCallbacksAndMessages(null)
             }
             if (this::mLocHandlerThread.isInitialized) {
-                mLocHandlerThread.quit()
+                mLocHandlerThread.quitSafely()
             }
 
             if (this::mJoystickManager.isInitialized) {
@@ -451,11 +452,11 @@ class ServiceGoRoot : Service() {
                 stopForeground(true)
             }
         } catch (e: Exception) {
-            MiniLog.e(this, "ServiceGoRoot", "Error in onDestroy: ${e.message}")
+            KailLog.e(this, "ServiceGoRoot", "Error in onDestroy: ${e.message}")
         }
 
         super.onDestroy()
-        MiniLog.i(this, "ServiceGoRoot", "onDestroy finished")
+        KailLog.i(this, "ServiceGoRoot", "onDestroy finished")
     }
 
     private fun initNotification() {
@@ -544,13 +545,11 @@ class ServiceGoRoot : Service() {
     }
 
     private fun initGoLocation() {
-        mLocHandlerThread = HandlerThread(SERVICE_GO_HANDLER_NAME, Process.THREAD_PRIORITY_FOREGROUND)
+        mLocHandlerThread = HandlerThread(SERVICE_GO_HANDLER_NAME, Process.THREAD_PRIORITY_BACKGROUND)
         mLocHandlerThread.start()
         mLocHandler = object : Handler(mLocHandlerThread.looper) {
             override fun handleMessage(msg: Message) {
                 try {
-                    Thread.sleep(50)
-
                     if (!isStop) {
                         if (mRoutePoints.size >= 2) {
                             val speedForStep = if (speedFluctuation) {
@@ -558,7 +557,8 @@ class ServiceGoRoot : Service() {
                             } else {
                                 mSpeed
                             }
-                            advanceAlongRoute(speedForStep * 0.05)
+                            val intervalMs = currentLocationUpdateIntervalMs()
+                            advanceAlongRoute(speedForStep * (intervalMs / 1000.0))
                             updateJoystickStatus()
                         }
                     }
@@ -567,18 +567,26 @@ class ServiceGoRoot : Service() {
                         kailTick()
                     }
 
-                    sendEmptyMessage(HANDLER_MSG_ID)
+                    if (!isStop) {
+                        sendEmptyMessageDelayed(HANDLER_MSG_ID, currentLocationUpdateIntervalMs())
+                    }
                 } catch (e: InterruptedException) {
-                    MiniLog.e(this@ServiceGoRoot, "ServiceGoRoot", "handleMessage interrupted: ${e.message}")
+                    KailLog.e(this@ServiceGoRoot, "ServiceGoRoot", "handleMessage interrupted: ${e.message}")
                     Thread.currentThread().interrupt()
                 } catch (e: Exception) {
-                    MiniLog.e(this@ServiceGoRoot, "ServiceGoRoot", "handleMessage exception: ${e.message}")
+                    KailLog.e(this@ServiceGoRoot, "ServiceGoRoot", "handleMessage exception: ${e.message}")
                     if (!isStop) {
-                        sendEmptyMessageDelayed(HANDLER_MSG_ID, 100)
+                        sendEmptyMessageDelayed(HANDLER_MSG_ID, currentLocationUpdateIntervalMs())
                     }
                 }
             }
         }
+    }
+
+    private fun currentLocationUpdateIntervalMs(): Long {
+        val prefs = PreferenceManager.getDefaultSharedPreferences(this)
+        return (prefs.getString("setting_report_interval", DEFAULT_LOCATION_UPDATE_INTERVAL_MS.toString())?.toLongOrNull()
+            ?: DEFAULT_LOCATION_UPDATE_INTERVAL_MS).coerceAtLeast(0L)
     }
 
     private fun startLocationLoop() {
@@ -592,83 +600,83 @@ class ServiceGoRoot : Service() {
     private fun kailInitIfNeeded(): Boolean {
         if (kailRandomKey != null) return true
         val rely = Bundle()
-        MiniLog.i(this, "ServiceGoRoot", "sending exchange_key...")
+        KailLog.i(this, "ServiceGoRoot", "sending exchange_key...")
         val ok = kotlin.runCatching {
             mLocManager.sendExtraCommand(KAIL_PROVIDER, "exchange_key", rely)
         }.onFailure {
-            MiniLog.e(this, "ServiceGoRoot", "sendExtraCommand exception: ${it.message}")
+            KailLog.e(this, "ServiceGoRoot", "sendExtraCommand exception: ${it.message}")
         }.getOrDefault(false)
         if (!ok) {
-            MiniLog.e(this, "ServiceGoRoot", "exchange_key failed (sendExtraCommand returned false)")
+            KailLog.e(this, "ServiceGoRoot", "exchange_key failed (sendExtraCommand returned false)")
             return false
         }
         val key = rely.getString("key")
         if (key.isNullOrBlank()) {
-            MiniLog.e(this, "ServiceGoRoot", "exchange_key failed (key is null/blank)")
+            KailLog.e(this, "ServiceGoRoot", "exchange_key failed (key is null/blank)")
             return false
         }
-        MiniLog.i(this, "ServiceGoRoot", "exchange_key success, key=$key")
+        KailLog.i(this, "ServiceGoRoot", "exchange_key success, key=$key")
         kailRandomKey = key
 
-        MiniLog.i(this, "ServiceGoRoot", ">>> Calling kailLoadNativeLibraryIfNeeded...")
+        KailLog.i(this, "ServiceGoRoot", ">>> Calling kailLoadNativeLibraryIfNeeded...")
         val nativeLoadResult = kailLoadNativeLibraryIfNeeded()
-        MiniLog.i(this, "ServiceGoRoot", ">>> kailLoadNativeLibraryIfNeeded result: $nativeLoadResult")
+        KailLog.i(this, "ServiceGoRoot", ">>> kailLoadNativeLibraryIfNeeded result: $nativeLoadResult")
 
         return true
     }
 
     private fun kailLoadNativeLibraryIfNeeded(): Boolean {
-        MiniLog.i(this, "ServiceGoRoot", ">>> kailLoadNativeLibraryIfNeeded called")
+        KailLog.i(this, "ServiceGoRoot", ">>> kailLoadNativeLibraryIfNeeded called")
         
-        if (!com.mini.location.utils.ShellUtils.hasRoot()) {
-            MiniLog.e(this, "ServiceGoRoot", ">>> No root access!")
+        if (!com.kail.location.utils.ShellUtils.hasRoot()) {
+            KailLog.e(this, "ServiceGoRoot", ">>> No root access!")
             return false
         }
         
-        MiniLog.i(this, "ServiceGoRoot", ">>> Root access OK")
+        KailLog.i(this, "ServiceGoRoot", ">>> Root access OK")
 
-        val selinuxResult = com.mini.location.utils.ShellUtils.executeCommand("setenforce 0")
-        MiniLog.i(this, "ServiceGoRoot", ">>> setenforce 0 result: $selinuxResult")
+        val selinuxResult = com.kail.location.utils.ShellUtils.executeCommand("setenforce 0")
+        KailLog.i(this, "ServiceGoRoot", ">>> setenforce 0 result: $selinuxResult")
 
-        val soDir = java.io.File("/data/local/mini-lib")
-        com.mini.location.utils.ShellUtils.executeCommand("rm -rf ${soDir.absolutePath}")
-        com.mini.location.utils.ShellUtils.executeCommand("mkdir -p ${soDir.absolutePath}")
-        com.mini.location.utils.ShellUtils.executeCommand("chmod 777 ${soDir.absolutePath}")
-        com.mini.location.utils.ShellUtils.executeCommand("chcon u:object_r:system_file:s0 ${soDir.absolutePath}")
-        MiniLog.i(this, "ServiceGoRoot", ">>> Directory created: ${soDir.absolutePath}")
+        val soDir = java.io.File("/data/local/kail-lib")
+        com.kail.location.utils.ShellUtils.executeCommand("rm -rf ${soDir.absolutePath}")
+        com.kail.location.utils.ShellUtils.executeCommand("mkdir -p ${soDir.absolutePath}")
+        com.kail.location.utils.ShellUtils.executeCommand("chmod 777 ${soDir.absolutePath}")
+        com.kail.location.utils.ShellUtils.executeCommand("chcon u:object_r:system_file:s0 ${soDir.absolutePath}")
+        KailLog.i(this, "ServiceGoRoot", ">>> Directory created: ${soDir.absolutePath}")
         
         val soFile = java.io.File(soDir, "libkail_native_hook.so")
 
         runCatching {
             val nativeDir = applicationInfo.nativeLibraryDir
             val apkSoFile = java.io.File(nativeDir, "libkail_native_hook.so")
-            MiniLog.i(this, "ServiceGoRoot", ">>> nativeDir: $nativeDir")
-            MiniLog.i(this, "ServiceGoRoot", ">>> apkSoFile: ${apkSoFile.absolutePath}, exists: ${apkSoFile.exists()}")
+            KailLog.i(this, "ServiceGoRoot", ">>> nativeDir: $nativeDir")
+            KailLog.i(this, "ServiceGoRoot", ">>> apkSoFile: ${apkSoFile.absolutePath}, exists: ${apkSoFile.exists()}")
             
             if (apkSoFile.exists()) {
-                val copyResult = com.mini.location.utils.ShellUtils.executeCommand("cp ${apkSoFile.absolutePath} ${soFile.absolutePath}")
-                MiniLog.i(this, "ServiceGoRoot", ">>> cp result: $copyResult")
-                val chmodResult = com.mini.location.utils.ShellUtils.executeCommand("chmod 777 ${soFile.absolutePath}")
-                MiniLog.i(this, "ServiceGoRoot", ">>> chmod result: $chmodResult")
-                val chconResult = com.mini.location.utils.ShellUtils.executeCommand("chcon u:object_r:system_file:s0 ${soFile.absolutePath}")
-                MiniLog.i(this, "ServiceGoRoot", ">>> chcon result: $chconResult")
+                val copyResult = com.kail.location.utils.ShellUtils.executeCommand("cp ${apkSoFile.absolutePath} ${soFile.absolutePath}")
+                KailLog.i(this, "ServiceGoRoot", ">>> cp result: $copyResult")
+                val chmodResult = com.kail.location.utils.ShellUtils.executeCommand("chmod 777 ${soFile.absolutePath}")
+                KailLog.i(this, "ServiceGoRoot", ">>> chmod result: $chmodResult")
+                val chconResult = com.kail.location.utils.ShellUtils.executeCommand("chcon u:object_r:system_file:s0 ${soFile.absolutePath}")
+                KailLog.i(this, "ServiceGoRoot", ">>> chcon result: $chconResult")
                 
-                MiniLog.i(this, "ServiceGoRoot", ">>> Restoring SELinux to enforcing mode")
-                val selinuxRestoreResult = com.mini.location.utils.ShellUtils.executeCommand("setenforce 1")
-                MiniLog.i(this, "ServiceGoRoot", ">>> setenforce 1 result: $selinuxRestoreResult")
+                KailLog.i(this, "ServiceGoRoot", ">>> Restoring SELinux to enforcing mode")
+                val selinuxRestoreResult = com.kail.location.utils.ShellUtils.executeCommand("setenforce 1")
+                KailLog.i(this, "ServiceGoRoot", ">>> setenforce 1 result: $selinuxRestoreResult")
             } else {
-                MiniLog.e(this, "ServiceGoRoot", ">>> apkSoFile does NOT exist!")
+                KailLog.e(this, "ServiceGoRoot", ">>> apkSoFile does NOT exist!")
             }
         }.onFailure {
-            MiniLog.e(this, "ServiceGoRoot", ">>> Failed to copy native library: ${it.message}")
+            KailLog.e(this, "ServiceGoRoot", ">>> Failed to copy native library: ${it.message}")
             return false
         }
 
-        MiniLog.i(this, "ServiceGoRoot", ">>> soFile exists: ${soFile.exists()}")
+        KailLog.i(this, "ServiceGoRoot", ">>> soFile exists: ${soFile.exists()}")
 
-        MiniLog.i(this, "ServiceGoRoot", ">>> Getting offsets...")
+        KailLog.i(this, "ServiceGoRoot", ">>> Getting offsets...")
         val offsets = getOffsetsFromSystem()
-        MiniLog.i(this, "ServiceGoRoot", ">>> Got offsets: writeOffset=${offsets.first}, convertOffset=${offsets.second}")
+        KailLog.i(this, "ServiceGoRoot", ">>> Got offsets: writeOffset=${offsets.first}, convertOffset=${offsets.second}")
         
         val loadResult = kailSend("load_library") {
             putString("path", soFile.absolutePath)
@@ -676,7 +684,7 @@ class ServiceGoRoot : Service() {
             putString("convert_offset", offsets.second)
         }
         
-        MiniLog.i(this, "ServiceGoRoot", ">>> loadResult: $loadResult")
+        KailLog.i(this, "ServiceGoRoot", ">>> loadResult: $loadResult")
         
         if (loadResult && stepEnabledCache) {
             kailSend("set_route_simulation") {
@@ -684,9 +692,9 @@ class ServiceGoRoot : Service() {
                 putFloat("spm", stepFreqCache.toFloat())
                 putInt("mode", 0)
             }
-            MiniLog.i(this, "ServiceGoRoot", ">>> Native hook loaded for route simulation")
+            KailLog.i(this, "ServiceGoRoot", ">>> Native hook loaded for route simulation")
         } else {
-            MiniLog.e(this, "ServiceGoRoot", ">>> Load failed!")
+            KailLog.e(this, "ServiceGoRoot", ">>> Load failed!")
         }
         
         return loadResult
@@ -699,18 +707,18 @@ class ServiceGoRoot : Service() {
         
         for (cmd in commands) {
             try {
-                MiniLog.i(this, "ServiceGoRoot", ">>> Trying command: $cmd")
-                val testCmd = com.mini.location.utils.ShellUtils.executeCommand("$cmd 2>&1")
+                KailLog.i(this, "ServiceGoRoot", ">>> Trying command: $cmd")
+                val testCmd = com.kail.location.utils.ShellUtils.executeCommand("$cmd 2>&1")
                 if (testCmd.contains("not found") || testCmd.isEmpty() && !cmd.startsWith("/")) {
                     continue
                 }
-                val sensorOut = com.mini.location.utils.ShellUtils.executeCommand("$cmd -Ws /system/lib64/libsensor.so 2>/dev/null | grep _ZN7android7BitTube11sendObjects")
-                val sensorServiceOut = com.mini.location.utils.ShellUtils.executeCommand("$cmd -Ws /system/lib64/libsensorservice.so 2>/dev/null | grep '_ZN7android8hardware7sensors14implementation20convertToSensorEvent[^4V1]'")
-                val sensorServiceV1Out = com.mini.location.utils.ShellUtils.executeCommand("$cmd -Ws /system/lib64/libsensorservice.so 2>/dev/null | grep '_ZN7android8hardware7sensors4V1_014implementation20convertToSensorEvent'")
+                val sensorOut = com.kail.location.utils.ShellUtils.executeCommand("$cmd -Ws /system/lib64/libsensor.so 2>/dev/null | grep _ZN7android7BitTube11sendObjects")
+                val sensorServiceOut = com.kail.location.utils.ShellUtils.executeCommand("$cmd -Ws /system/lib64/libsensorservice.so 2>/dev/null | grep '_ZN7android8hardware7sensors14implementation20convertToSensorEvent[^4V1]'")
+                val sensorServiceV1Out = com.kail.location.utils.ShellUtils.executeCommand("$cmd -Ws /system/lib64/libsensorservice.so 2>/dev/null | grep '_ZN7android8hardware7sensors4V1_014implementation20convertToSensorEvent'")
                 
-                MiniLog.i(this, "ServiceGoRoot", ">>> sensorOut: $sensorOut")
-                MiniLog.i(this, "ServiceGoRoot", ">>> sensorServiceOut: $sensorServiceOut")
-                MiniLog.i(this, "ServiceGoRoot", ">>> sensorServiceV1Out: $sensorServiceV1Out")
+                KailLog.i(this, "ServiceGoRoot", ">>> sensorOut: $sensorOut")
+                KailLog.i(this, "ServiceGoRoot", ">>> sensorServiceOut: $sensorServiceOut")
+                KailLog.i(this, "ServiceGoRoot", ">>> sensorServiceV1Out: $sensorServiceV1Out")
                 
                 if (sensorOut.isNotEmpty()) {
                     val sensorOffset = sensorOut.trim().split(":").getOrNull(1)?.trim()?.split(" ")?.getOrNull(0)?.trim() ?: ""
@@ -725,17 +733,17 @@ class ServiceGoRoot : Service() {
                     if (sensorOffset.isNotEmpty() && sensorServiceOffset.isNotEmpty()) {
                         val finalSensorOffset = if (sensorOffset.startsWith("0x")) sensorOffset else "0x$sensorOffset"
                         val finalSensorServiceOffset = if (sensorServiceOffset.startsWith("0x")) sensorServiceOffset else "0x$sensorServiceOffset"
-                        MiniLog.i(this, "ServiceGoRoot", ">>> Got offsets: sensor=$finalSensorOffset, sensorService=$finalSensorServiceOffset")
+                        KailLog.i(this, "ServiceGoRoot", ">>> Got offsets: sensor=$finalSensorOffset, sensorService=$finalSensorServiceOffset")
                         return Pair(finalSensorOffset, finalSensorServiceOffset)
                     }
                 }
             } catch (e: Exception) {
-                MiniLog.e(this, "ServiceGoRoot", ">>> getOffsets exception: ${e.message}")
+                KailLog.e(this, "ServiceGoRoot", ">>> getOffsets exception: ${e.message}")
                 continue
             }
         }
         
-        MiniLog.w(this, "ServiceGoRoot", ">>> readelf not available, skipping sensor offset detection")
+        KailLog.w(this, "ServiceGoRoot", ">>> readelf not available, skipping sensor offset detection")
         return Pair("0x0", "0x0")
     }
 
@@ -744,21 +752,21 @@ class ServiceGoRoot : Service() {
         val rely = Bundle()
         rely.putString("command_id", commandId)
         rely.block()
-        MiniLog.i(this, "ServiceGoRoot", "KAIL发送：cmd=$commandId，内容=$rely",isHighFrequency = true)
+        KailLog.i(this, "ServiceGoRoot", "KAIL发送：cmd=$commandId，内容=$rely",isHighFrequency = true)
         val ok = kotlin.runCatching {
             mLocManager.sendExtraCommand(KAIL_PROVIDER, key, rely)
         }.onFailure {
-             MiniLog.e(this, "ServiceGoRoot", "kailSend exception command=$commandId: ${it.message}")
+             KailLog.e(this, "ServiceGoRoot", "kailSend exception command=$commandId: ${it.message}")
              kailRandomKey = null
              kailStarted = false
          }.getOrDefault(false)
         
         if (!ok) {
-            MiniLog.e(this, "ServiceGoRoot", "KAIL结果失败：cmd=$commandId，可能密钥失效",isHighFrequency = true)
+            KailLog.e(this, "ServiceGoRoot", "KAIL结果失败：cmd=$commandId，可能密钥失效",isHighFrequency = true)
             kailRandomKey = null
             kailStarted = false
         } else {
-            MiniLog.i(this, "ServiceGoRoot", "KAIL结果成功：cmd=$commandId",isHighFrequency = true)
+            KailLog.i(this, "ServiceGoRoot", "KAIL结果成功：cmd=$commandId",isHighFrequency = true)
         }
         return ok
     }
@@ -766,7 +774,7 @@ class ServiceGoRoot : Service() {
     private fun kailStartIfNeeded(): Boolean {
         if (kailStarted) return true
         if (!kailInitIfNeeded()) {
-            MiniLog.e(this, "ServiceGoRoot", "kailStartIfNeeded failed because init failed")
+            KailLog.e(this, "ServiceGoRoot", "kailStartIfNeeded failed because init failed")
             return false
         }
         val ok = kailSend("start") {
@@ -775,7 +783,7 @@ class ServiceGoRoot : Service() {
             putFloat("accuracy", 1.0f)
         }
         if (ok) {
-            MiniLog.i(this, "ServiceGoRoot", "kail start command success")
+            KailLog.i(this, "ServiceGoRoot", "kail start command success")
             kailStarted = true
             // 推送全部配置到 Xposed 模块
             pushConfigToXposed()
@@ -783,7 +791,7 @@ class ServiceGoRoot : Service() {
             kailSend("set_step_cadence") { putFloat("cadence", stepFreqCache.toFloat()) }
             kailSend("set_step_sim_enabled") { putBoolean("enabled", stepSimEnabledCache) }
         } else {
-            MiniLog.e(this, "ServiceGoRoot", "kail start command failed")
+            KailLog.e(this, "ServiceGoRoot", "kail start command failed")
         }
         return ok
     }
@@ -806,19 +814,22 @@ class ServiceGoRoot : Service() {
                 putBoolean("hookWifi", prefs.getBoolean("setting_disable_wifi_scan", true))
                 putBoolean("needDowngradeToCdma", prefs.getBoolean("setting_downgrade_to_cdma", true))
                 putBoolean("loopBroadcastLocation", prefs.getBoolean("setting_loop_broadcast", false))
+                putBoolean("enableNaturalJitter", prefs.getBoolean("setting_natural_jitter", false))
                 putInt("minSatellites", prefs.getString("setting_min_satellites", "12")?.toIntOrNull() ?: 12)
-                putFloat("accuracy", prefs.getString("setting_accuracy", "25.0")?.toFloatOrNull() ?: 25.0f)
-                putInt("reportIntervalMs", prefs.getString("setting_report_interval", "100")?.toIntOrNull() ?: 100)
+                putFloat("accuracy", prefs.getString("setting_accuracy", "2.5")?.toFloatOrNull() ?: 2.5f)
+                putInt("reportIntervalMs", prefs.getString("setting_report_interval", "200")?.toIntOrNull() ?: 200)
+                putBoolean("enableFileLog", prefs.getBoolean("setting_log_enabled", false))
+                putBoolean("enableDebugLog", prefs.getBoolean("setting_debug_log_enabled", false))
             }
-            MiniLog.i(this, "ServiceGoRoot", "pushConfigToXposed succeeded")
+            KailLog.i(this, "ServiceGoRoot", "pushConfigToXposed succeeded")
         } catch (e: Exception) {
-            MiniLog.e(this, "ServiceGoRoot", "pushConfigToXposed failed: ${e.message}")
+            KailLog.e(this, "ServiceGoRoot", "pushConfigToXposed failed: ${e.message}")
         }
     }
 
     private fun kailUpdateOnce() {
         if (!kailStartIfNeeded()) {
-            MiniLog.e(this, "ServiceGoRoot", "kailUpdateOnce failed because start failed")
+            KailLog.e(this, "ServiceGoRoot", "kailUpdateOnce failed because start failed")
             return
         }
         kailSend("set_altitude") { putDouble("altitude", mCurAlt) }
@@ -838,37 +849,30 @@ class ServiceGoRoot : Service() {
         val lat = mCurLat
         val lng = mCurLng
         val bearing = mCurBea.toDouble()
-//        MiniLog.log(this, "ServiceGoRoot", "Kail Tick: lat=$lat, lng=$lng, speed=$speedToSet", isHighFrequency = true)
-// Use ThreadPool to send commands without blocking main loop
+//        KailLog.log(this, "ServiceGoRoot", "Kail Tick: lat=$lat, lng=$lng, speed=$speedToSet", isHighFrequency = true)
         val key = kailRandomKey ?: return
         val locMgr = mLocManager
         val provider = KAIL_PROVIDER
-        
-        Thread {
+
+        fun sendCmd(cmdId: String, block: Bundle.() -> Unit) {
             try {
-                fun sendCmd(cmdId: String, block: Bundle.() -> Unit) {
-                    try {
-                        val rely = Bundle()
-                        rely.putString("command_id", cmdId)
-                        rely.block()
-                        locMgr.sendExtraCommand(provider, key, rely)
-                    } catch (e: Exception) {
-                        // Silent fail
-                    }
-                }
-                
-                sendCmd("set_speed") { putFloat("speed", speedToSet) }
-                sendCmd("set_bearing") { putDouble("bearing", bearing) }
-                sendCmd("update_location") {
-                    putDouble("lat", lat)
-                    putDouble("lon", lng)
-                    putString("mode", "=")
-                }
-                sendCmd("broadcast_location") { }
+                val rely = Bundle()
+                rely.putString("command_id", cmdId)
+                rely.block()
+                locMgr.sendExtraCommand(provider, key, rely)
             } catch (e: Exception) {
                 // Silent fail
             }
-        }.start()
+        }
+
+        sendCmd("set_speed") { putFloat("speed", speedToSet) }
+        sendCmd("set_bearing") { putDouble("bearing", bearing) }
+        sendCmd("update_location") {
+            putDouble("lat", lat)
+            putDouble("lon", lng)
+            putString("mode", "=")
+        }
+        sendCmd("broadcast_location") { }
     }
 
     private fun kailStopSafe() {
@@ -878,9 +882,9 @@ class ServiceGoRoot : Service() {
         kailStarted = false
         kailRandomKey = null
         
-        MiniLog.i(this, "ServiceGoRoot", ">>> Restoring SELinux to enforcing mode")
-        val selinuxResult = com.mini.location.utils.ShellUtils.executeCommand("setenforce 1")
-        MiniLog.i(this, "ServiceGoRoot", ">>> setenforce 1 result: $selinuxResult")
+        KailLog.i(this, "ServiceGoRoot", ">>> Restoring SELinux to enforcing mode")
+        val selinuxResult = com.kail.location.utils.ShellUtils.executeCommand("setenforce 1")
+        KailLog.i(this, "ServiceGoRoot", ">>> setenforce 1 result: $selinuxResult")
     }
 
     private fun advanceAlongRoute(distanceMeters: Double) {

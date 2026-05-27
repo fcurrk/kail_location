@@ -1,21 +1,24 @@
-package com.mini.location.views.locationsimulation
+package com.kail.location.views.locationsimulation
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import com.mini.location.R
-import com.mini.location.views.base.BaseActivity
-import com.mini.location.viewmodels.LocationSimulationViewModel
-import com.mini.location.views.theme.locationTheme
-import com.mini.location.views.routesimulation.RouteSimulationActivity
-import com.mini.location.views.settings.SettingsActivity
+import androidx.core.app.ActivityCompat
+import com.kail.location.R
+import com.kail.location.views.base.BaseActivity
+import com.kail.location.viewmodels.LocationSimulationViewModel
+import com.kail.location.views.theme.locationTheme
+import com.kail.location.views.routesimulation.RouteSimulationActivity
+import com.kail.location.views.settings.SettingsActivity
 import android.widget.Toast
 
-import com.mini.location.views.locationpicker.LocationPickerActivity
-import com.mini.location.views.navigationsimulation.NavigationSimulationActivity
+import com.kail.location.views.locationpicker.LocationPickerActivity
+import com.kail.location.views.navigationsimulation.NavigationSimulationActivity
 
 
 /**
@@ -26,11 +29,16 @@ class LocationSimulationActivity : BaseActivity() {
 
     private val viewModel: LocationSimulationViewModel by viewModels()
 
+    companion object {
+        private const val LOCATION_PERMISSION_REQUEST = 2001
+    }
+
     /**
      * Activity 启动回调：设置 Compose 界面与订阅状态流。
      */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        requestLocationPermissionIfNeeded()
 
         setContent {
             locationTheme {
@@ -74,13 +82,13 @@ class LocationSimulationActivity : BaseActivity() {
                                 startActivity(Intent(this, NavigationSimulationActivity::class.java))
                             }
                             R.id.nav_nfc_simulation -> {
-                                startActivity(Intent(this, com.mini.location.views.nfcsimulation.NfcSimulationActivity::class.java))
+                                startActivity(Intent(this, com.kail.location.views.nfcsimulation.NfcSimulationActivity::class.java))
                             }
                             R.id.nav_settings -> {
                                 startActivity(Intent(this, SettingsActivity::class.java))
                             }
                             R.id.nav_sponsor -> {
-                                startActivity(Intent(this, com.mini.location.views.sponsor.SponsorActivity::class.java))
+                                startActivity(Intent(this, com.kail.location.views.sponsor.SponsorActivity::class.java))
                             }
                             R.id.nav_dev -> {
                                 try {
@@ -127,6 +135,35 @@ class LocationSimulationActivity : BaseActivity() {
             }
         }
 
+    }
+
+    private fun requestLocationPermissionIfNeeded() {
+        val permissionsToRequest = mutableListOf<String>()
+
+        if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            permissionsToRequest.add(Manifest.permission.ACCESS_FINE_LOCATION)
+        }
+        if (checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            permissionsToRequest.add(Manifest.permission.ACCESS_COARSE_LOCATION)
+        }
+
+        if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            permissionsToRequest.add(Manifest.permission.READ_EXTERNAL_STORAGE)
+        }
+        if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            permissionsToRequest.add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        }
+        if (checkSelfPermission(Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+            permissionsToRequest.add(Manifest.permission.READ_PHONE_STATE)
+        }
+
+        if (permissionsToRequest.isEmpty()) return
+
+        ActivityCompat.requestPermissions(
+            this,
+            permissionsToRequest.toTypedArray(),
+            LOCATION_PERMISSION_REQUEST
+        )
     }
 
     override fun onResume() {

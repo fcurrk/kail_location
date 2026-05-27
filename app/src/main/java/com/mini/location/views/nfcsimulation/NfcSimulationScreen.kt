@@ -1,4 +1,4 @@
-package com.mini.location.views.nfcsimulation
+package com.kail.location.views.nfcsimulation
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -22,8 +22,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.sp
-import com.mini.location.R
-import com.mini.location.views.common.AppDrawer
+import com.kail.location.R
+import com.kail.location.views.common.AppDrawer
 import android.widget.Toast
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -121,7 +121,7 @@ fun NfcSimulationScreen(
                 TopAppBar(
                     title = { Text(stringResource(R.string.nfc_sim_title)) },
                     navigationIcon = {
-                        IconButton(onClick = { scope.launch { drawerState.open() } }) {
+                        IconButton(onClick = { scope.launch { drawerState.animateTo(DrawerValue.Open, androidx.compose.animation.core.tween(durationMillis = 160)) } }) {
                             Icon(
                                 imageVector = Icons.Default.Menu,
                                 contentDescription = "Menu",
@@ -403,9 +403,6 @@ fun NfcSimulationScreen(
                             )
                         }
                     }
-                }
-                item {
-                    com.mini.location.ads.NativeAdCard()
                 }
             }
         }
