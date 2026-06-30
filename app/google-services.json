@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "231996723217",
+    "project_id": "minilocation-d2aca",
+    "storage_bucket": "minilocation-d2aca.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:231996723217:android:366fba0c4dfbae2f7321b0",
+        "android_client_info": {
+          "package_name": "com.mini.location"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDC3IA-rytY1d5CHfth7N01W6pd_jYwjr4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
