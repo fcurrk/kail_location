@@ -15,6 +15,7 @@ import com.kail.location.auth.UsageManager
 import com.kail.location.sandbox.SandboxManager
 import com.kail.location.sandbox.SandboxSettingsManager
 import com.kail.location.service.Root.RootDeployer
+import com.kail.location.BuildConfig
 import java.io.File
 import top.niunaijun.blackbox.BlackBoxCore
 import top.niunaijun.blackbox.app.configuration.ClientConfiguration
