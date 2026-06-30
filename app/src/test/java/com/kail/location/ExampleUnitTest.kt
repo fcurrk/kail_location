@@ -1,4 +1,4 @@
-package com.mini.location
+package com.kail.location
 
 import org.junit.Test
 
