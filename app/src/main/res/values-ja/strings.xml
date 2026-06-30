@@ -4,7 +4,7 @@
     <string name="history_title">履歴</string>
     <string name="history_search_hint">履歴を検索</string>
     <string name="history_no_record">履歴はありません</string>
-    <string name="app_service_tips">KailLocation サービスを実行中</string>
+    <string name="app_service_tips">MiniLocation サービスを実行中</string>
     <string name="app_agreement">利用規約</string>
     <string name="app_privacy">プライバシーポリシー</string>
     <string name="app_agreement_privacy">利用規約とプライバシーポリシーを読み、同意しました</string>
@@ -104,7 +104,7 @@
     <string name="run_mode_xposed">Xposed モード</string>
     <string name="run_mode_sandbox">サンドボックス モード</string>
     <string name="xposed_module_not_found">Xposed モジュールが見つかりません</string>
-    <string name="xposed_module_download_hint">Xposed モードを使用するには、KailLocation Xposed モジュールをインストールしてください。</string>
+    <string name="xposed_module_download_hint">Xposed モードを使用するには、MiniLocation Xposed モジュールをインストールしてください。</string>
     <string name="xposed_module_download">ダウンロード</string>
     <string name="run_mode_changed">実行モードを %s に切り替えました</string>
     <string name="sponsor_title">作者を支援</string>
@@ -126,7 +126,7 @@
 
     <string name="update_title">新しいバージョンがあります</string>
     <string name="update_downloading">更新ファイルをダウンロード中...</string>
-    <string name="update_last">KailLocation は最新です</string>
+    <string name="update_last">MiniLocation は最新です</string>
     <string name="update_download">今すぐダウンロード</string>
     <string name="update_ignore">今回は無視</string>
     <string name="update_time">更新日時：</string>
@@ -253,7 +253,7 @@
     <string name="data_transfer_import_failed">データのインポートに失敗しました</string>
     <string name="data_transfer_invalid_file">無効なバックアップファイルです</string>
     <string name="data_transfer_none_selected">少なくとも 1 つ選択してください</string>
-    <string name="data_transfer_default_filename">kail_location_backup</string>
+    <string name="data_transfer_default_filename">Mini_location_backup</string>
 
     <string name="setting_current_version">現在のバージョン</string>
     <string name="setting_not_set">未設定</string>
@@ -616,7 +616,7 @@
     <string name="root_hide_select_apps">対象アプリを選択</string>
 
 
-    <string name="app_name">KailLocation</string>
+    <string name="app_name">MiniLocation</string>
     <string name="app_author">kail</string>
     <string name="app_email">kailkali23143@gmail.com</string>
     <string name="app_statement">学習目的のみ。自己責任でご利用ください！</string>
@@ -639,7 +639,7 @@
     <string name="setting_opencellid_key">OpenCellID API Key</string>
     <string name="setting_opencellid_key_summary">经纬度から周辺基地局を検索するために使用。opencellid.org で登録が必要</string>
     <string name="vm_system_not_ready">システムの準備ができていません。%1$d 秒後にお試しください（残り約 %2$d 秒）</string>
-    <string name="service_root_fallback_noroot">ROOT 注入に失敗しました。Root マネージャーで KailLocation を承認してから再試行してください</string>
+    <string name="service_root_fallback_noroot">ROOT 注入に失敗しました。Root マネージャーで MiniLocation を承認してから再試行してください</string>
     <string name="service_root_fallback_binder">注入が適用されませんでした。後で再試行するか、デバイスを再起動してください</string>
     <string name="cell_type_gsm">GSM</string>
     <string name="cell_type_cdma">CDMA</string>

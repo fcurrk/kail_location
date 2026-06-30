@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">KailLocation</string>
+    <string name="app_name">MiniLocation</string>
     <string name="app_settings">Settings</string>
     <string name="app_history">History</string>
     <string name="history_title">History</string>
@@ -8,7 +8,7 @@
     <string name="app_author">kail</string>
     <string name="app_email">kailkali23143@gmail.com</string>
     <string name="app_statement">For learning purposes only. Use at your own risk!</string>
-    <string name="app_service_tips">KailLocation service is running</string>
+    <string name="app_service_tips">MiniLocation service is running</string>
     <string name="app_agreement">User Agreement</string>
     <string name="app_agreement_content">"1. This software is designed for learning Android development and does not collect any user data."
     "It is strictly prohibited to use this software to infringe on others\' privacy or for gaming profit. If users cannot comply with this rule, please delete immediately."
@@ -124,7 +124,7 @@
     <string name="run_mode_xposed">Xposed Mode</string>
     <string name="run_mode_sandbox">Sandbox Mode</string>
     <string name="xposed_module_not_found">Xposed Module Not Found</string>
-    <string name="xposed_module_download_hint">Please install the KailLocation Xposed module to use Xposed mode.</string>
+    <string name="xposed_module_download_hint">Please install the MiniLocation Xposed module to use Xposed mode.</string>
     <string name="xposed_module_download">Download</string>
     <string name="run_mode_changed">Run mode changed to %s</string>
     <string name="sponsor_title">Sponsor</string>
@@ -146,7 +146,7 @@
 
     <string name="update_title">New Version Available</string>
     <string name="update_downloading">Downloading update...</string>
-    <string name="update_last">KailLocation is up to date</string>
+    <string name="update_last">MiniLocation is up to date</string>
     <string name="update_download">Download</string>
     <string name="update_ignore">Ignore</string>
     <string name="update_time">Updated: </string>
@@ -276,7 +276,7 @@
     <string name="data_transfer_import_failed">Data import failed</string>
     <string name="data_transfer_invalid_file">Invalid backup file</string>
     <string name="data_transfer_none_selected">Please select at least one item</string>
-    <string name="data_transfer_default_filename">kail_location_backup</string>
+    <string name="data_transfer_default_filename">Mini_location_backup</string>
 
     <string name="setting_current_version">Current Version</string>
     <string name="setting_not_set">Not set</string>
@@ -736,7 +736,7 @@
     <string name="setting_opencellid_key">OpenCellID API Key</string>
     <string name="setting_opencellid_key_summary">Used to query nearby cell towers by coordinates. Register at opencellid.org first.</string>
     <string name="vm_system_not_ready">System not ready. Please try again in %1$d seconds (about %2$d seconds remaining).</string>
-    <string name="service_root_fallback_noroot">ROOT injection failed. Make sure KailLocation is granted root access in your root manager and try again.</string>
+    <string name="service_root_fallback_noroot">ROOT injection failed. Make sure MiniLocation is granted root access in your root manager and try again.</string>
     <string name="service_root_fallback_binder">Injection failed. Please retry later or restart your device.</string>
     <string name="cell_type_gsm">GSM</string>
     <string name="cell_type_cdma">CDMA</string>

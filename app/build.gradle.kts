@@ -12,11 +12,11 @@ android {
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.kail.location"
+        applicationId = "com.mini.location"
         minSdk = 27
         targetSdk = 36
         versionCode = 37
-        versionName = "1.6.4"
+        versionName = "1.6.4260630"
         val defaultKey = System.getenv("BAIDU_MAP_DEFAULT_KEY") ?: ""
         buildConfigField("String", "DEFAULT_BAIDU_MAP_KEY", "\"$defaultKey\"")
 

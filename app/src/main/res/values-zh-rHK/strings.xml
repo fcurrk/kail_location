@@ -4,7 +4,7 @@
     <string name="history_title">歷史紀錄</string>
     <string name="history_search_hint">搜尋歷史紀錄</string>
     <string name="history_no_record">暫無歷史紀錄</string>
-    <string name="app_service_tips">KailLocation 服務正在執行</string>
+    <string name="app_service_tips">MiniLocation 服務正在執行</string>
     <string name="app_agreement">使用者協議</string>
     <string name="app_privacy">隱私政策</string>
     <string name="app_agreement_privacy">我已閱讀並同意《使用者協議》和《隱私政策》</string>
@@ -104,7 +104,7 @@
     <string name="run_mode_xposed">Xposed 模式</string>
     <string name="run_mode_sandbox">沙盒模式</string>
     <string name="xposed_module_not_found">未檢測到 Xposed 模組</string>
-    <string name="xposed_module_download_hint">請先安裝 KailLocation Xposed 模組才能使用 Xposed 模式。</string>
+    <string name="xposed_module_download_hint">請先安裝 MiniLocation Xposed 模組才能使用 Xposed 模式。</string>
     <string name="xposed_module_download">前往下載</string>
     <string name="run_mode_changed">運行模式已切換為 %s</string>
     <string name="sponsor_title">贊助作者</string>
@@ -126,7 +126,7 @@
 
     <string name="update_title">有新版本可用</string>
     <string name="update_downloading">正在下載升級檔...</string>
-    <string name="update_last">恭喜，KailLocation 已是最新版</string>
+    <string name="update_last">恭喜，MiniLocation 已是最新版</string>
     <string name="update_download">立即下載</string>
     <string name="update_ignore">忽略一次</string>
     <string name="update_time">更新時間：</string>
@@ -252,7 +252,7 @@
     <string name="data_transfer_import_failed">資料匯入失敗</string>
     <string name="data_transfer_invalid_file">無效的備份檔</string>
     <string name="data_transfer_none_selected">請至少選擇一項</string>
-    <string name="data_transfer_default_filename">kail_location_backup</string>
+    <string name="data_transfer_default_filename">Mini_location_backup</string>
 
     <string name="setting_current_version">目前版本</string>
     <string name="setting_not_set">未設定</string>
@@ -616,7 +616,7 @@
     <string name="root_hide_select_apps">選擇目標應用</string>
 
 
-    <string name="app_name">KailLocation</string>
+    <string name="app_name">MiniLocation</string>
     <string name="app_author">kail</string>
     <string name="app_email">kailkali23143@gmail.com</string>
     <string name="app_statement">僅供學習使用，否則後果自負！</string>
@@ -639,7 +639,7 @@
     <string name="setting_opencellid_key">OpenCellID API Key</string>
     <string name="setting_opencellid_key_summary">用於透過經緯度查詢周邊基站，需先在 opencellid.org 註冊獲取</string>
     <string name="vm_system_not_ready">系統未就緒，請開機 %1$d 秒後再試（剩餘約 %2$d 秒）</string>
-    <string name="service_root_fallback_noroot">ROOT 注入失敗，請確認已在 ROOT 管理器裡授權 KailLocation 後再試</string>
+    <string name="service_root_fallback_noroot">ROOT 注入失敗，請確認已在 ROOT 管理器裡授權 MiniLocation 後再試</string>
     <string name="service_root_fallback_binder">注入未生效，請稍候重試，或重新啟動裝置後再開始模擬</string>
     <string name="cell_type_gsm">GSM</string>
     <string name="cell_type_cdma">CDMA</string>

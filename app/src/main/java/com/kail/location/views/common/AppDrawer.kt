@@ -203,7 +203,7 @@ fun AppDrawer(
 
     ModalDrawerSheet {
         LazyColumn {
-            item { DrawerHeader(appVersion, onLoginClick = { showLoginActivity = true }, onProfileClick = { showProfileActivity = true }) }
+            item { DrawerHeader(appVersion) }  // 只传入版本号
             item { HorizontalDivider() }
 
             // ===== Group: 模拟 =====
