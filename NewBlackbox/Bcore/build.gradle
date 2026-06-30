@@ -13,7 +13,7 @@ android {
     
     buildFeatures {
         aidl true
-        prefab true  // 合并重复的 buildFeatures
+        prefab true
     }
     
     defaultConfig {
@@ -44,13 +44,11 @@ android {
         targetCompatibility JavaVersion.VERSION_17
     }
     
-    // ✅ 修改：使用新的 tasks 配置方式
     tasks.withType(JavaCompile).configureEach {
         options.compilerArgs << "-Xlint:-deprecation" << "-Xlint:-unchecked" << "-Xlint:-rawtypes"
         options.fork = true
         options.forkOptions.jvmArgs << "-Xmx2048m"
         doFirst {
-            // ✅ 修改：${buildDir} 改为 ${buildDirPath}
             def aidlDir = file("${buildDirPath}/generated/aidl_source_output_dir")
             if (aidlDir.exists()) {
                 aidlDir.eachFileRecurse { generatedFile ->
@@ -79,8 +77,8 @@ android {
         }
     }
     
-    // ✅ 修改：lintOptions 已弃用，改用 lint
-    lint {
+    // ✅ 改回 lintOptions（保持兼容）
+    lintOptions {
         checkReleaseBuilds false
         abortOnError false
         warningsAsErrors false
@@ -91,7 +89,6 @@ android {
     }
 }
 
-// ✅ 修改：使用新的 tasks 配置方式
 tasks.withType(Javadoc).configureEach {
     options.addStringOption('Xdoclint:none', '-quiet')
     options.addStringOption('encoding', 'UTF-8')
