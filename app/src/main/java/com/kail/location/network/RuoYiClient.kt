@@ -18,6 +18,9 @@ object RuoYiClient {
     private const val TAG = "RuoYiClient"
     private const val JSON_TYPE = "application/json"
 
+    // ========== 功能总开关：false 表示禁用所有网络请求 ==========
+    private const val FEATURE_ENABLED = false
+
     var baseUrl: String = BuildConfig.APP_API_URL
 
     private val trustAllCertificates = object : X509TrustManager {
@@ -53,7 +56,12 @@ object RuoYiClient {
         return this.header("Authorization", "Bearer $token")
     }
 
+    // ---------- 模拟次数检查 ----------
     fun checkSimulation(token: String): Result<Int> {
+        if (!FEATURE_ENABLED) {
+            KailLog.w(null, TAG, "功能已关闭，checkSimulation 返回默认值 0")
+            return Result.success(0)
+        }
         return runCatching {
             val url = "$baseUrl/member/simulation/check"
             val request = Request.Builder()
@@ -77,7 +85,12 @@ object RuoYiClient {
         }.onFailure { KailLog.w(null, TAG, "checkSimulation failed: ${it.message}") }
     }
 
+    // ---------- 消耗模拟次数 ----------
     fun useSimulation(token: String): Result<Unit> {
+        if (!FEATURE_ENABLED) {
+            KailLog.w(null, TAG, "功能已关闭，useSimulation 返回成功")
+            return Result.success(Unit)
+        }
         return runCatching {
             val url = "$baseUrl/member/simulation/use"
             val request = Request.Builder()
@@ -100,7 +113,12 @@ object RuoYiClient {
         }.onFailure { KailLog.w(null, TAG, "useSimulation failed: ${it.message}") }
     }
 
+    // ---------- 发送邮箱验证码 ----------
     fun sendMailCode(mail: String, scene: Int): Result<Unit> {
+        if (!FEATURE_ENABLED) {
+            KailLog.w(null, TAG, "功能已关闭，sendMailCode 返回成功")
+            return Result.success(Unit)
+        }
         return runCatching {
             val url = "$baseUrl/member/auth/send-mail-code"
             val json = JSONObject().apply {
@@ -127,7 +145,19 @@ object RuoYiClient {
         }.onFailure { KailLog.w(null, TAG, "sendMailCode failed: ${it.message}") }
     }
 
+    // ---------- 邮箱登录 ----------
     fun loginByMail(mail: String, code: String): Result<AuthResult> {
+        if (!FEATURE_ENABLED) {
+            KailLog.w(null, TAG, "功能已关闭，loginByMail 返回模拟 AuthResult")
+            return Result.success(
+                AuthResult(
+                    token = "fake-token-${System.currentTimeMillis()}",
+                    email = mail,
+                    id = "0",
+                    verified = true
+                )
+            )
+        }
         return runCatching {
             val url = "$baseUrl/member/auth/mail-login"
             val json = JSONObject().apply {
@@ -147,7 +177,6 @@ object RuoYiClient {
 
             val root = JSONObject(body)
             val respCode = root.optInt("code", -1)
-            // 不打印 body：包含 accessToken。
             KailLog.i(null, TAG, "loginByMail: http=${response.code} code=$respCode")
             if (respCode != 0) {
                 throw Exception(root.optString("msg", "登录失败"))
@@ -163,6 +192,7 @@ object RuoYiClient {
         }
     }
 
+    // ---------- 订阅状态 ----------
     data class SubscriptionStatus(
         val active: Boolean,
         val planName: String,
@@ -182,6 +212,10 @@ object RuoYiClient {
     )
 
     suspend fun getPlans(token: String): Result<List<SubscriptionPlan>> {
+        if (!FEATURE_ENABLED) {
+            KailLog.w(null, TAG, "功能已关闭，getPlans 返回空列表")
+            return Result.success(emptyList())
+        }
         return runCatching {
             val url = "$baseUrl/member/subscription-plan/list"
             val request = Request.Builder()
@@ -202,16 +236,18 @@ object RuoYiClient {
             val plans = mutableListOf<SubscriptionPlan>()
             for (i in 0 until arr.length()) {
                 val item = arr.getJSONObject(i)
-                plans.add(SubscriptionPlan(
-                    id = item.getLong("id"),
-                    name = item.getString("name"),
-                    description = item.optString("description", ""),
-                    price = item.getInt("price"),
-                    currency = item.optString("currency", "CNY"),
-                    billingInterval = item.optString("billingInterval", "month"),
-                    billingIntervalCount = item.optInt("billingIntervalCount", 1),
-                    trialDays = item.optInt("trialDays", 0)
-                ))
+                plans.add(
+                    SubscriptionPlan(
+                        id = item.getLong("id"),
+                        name = item.getString("name"),
+                        description = item.optString("description", ""),
+                        price = item.getInt("price"),
+                        currency = item.optString("currency", "CNY"),
+                        billingInterval = item.optString("billingInterval", "month"),
+                        billingIntervalCount = item.optInt("billingIntervalCount", 1),
+                        trialDays = item.optInt("trialDays", 0)
+                    )
+                )
             }
             KailLog.i(null, TAG, "getPlans: http=${response.code} code=$respCode count=${plans.size}")
             plans
@@ -227,6 +263,10 @@ object RuoYiClient {
     )
 
     suspend fun getNoticeList(): Result<List<NoticeInfo>> {
+        if (!FEATURE_ENABLED) {
+            KailLog.w(null, TAG, "功能已关闭，getNoticeList 返回空列表")
+            return Result.success(emptyList())
+        }
         return runCatching {
             val url = "$baseUrl/system/notice/list"
             val request = Request.Builder()
@@ -247,19 +287,25 @@ object RuoYiClient {
             val list = mutableListOf<NoticeInfo>()
             for (i in 0 until arr.length()) {
                 val item = arr.getJSONObject(i)
-                list.add(NoticeInfo(
-                    id = item.getLong("id"),
-                    title = item.optString("title", ""),
-                    type = item.optInt("type", 0),
-                    content = item.optString("content", ""),
-                    createTime = item.optString("createTime", "")
-                ))
+                list.add(
+                    NoticeInfo(
+                        id = item.getLong("id"),
+                        title = item.optString("title", ""),
+                        type = item.optInt("type", 0),
+                        content = item.optString("content", ""),
+                        createTime = item.optString("createTime", "")
+                    )
+                )
             }
             list
         }.onFailure { KailLog.w(null, TAG, "getNoticeList failed: ${it.message}") }
     }
 
     suspend fun getSubscriptionStatus(token: String): Result<SubscriptionStatus> {
+        if (!FEATURE_ENABLED) {
+            KailLog.w(null, TAG, "功能已关闭，getSubscriptionStatus 返回非活跃状态")
+            return Result.success(SubscriptionStatus(false, "", "", 0))
+        }
         return runCatching {
             val url = "$baseUrl/member/subscription/status"
             val request = Request.Builder()
@@ -290,5 +336,4 @@ object RuoYiClient {
             status
         }.onFailure { KailLog.w(null, TAG, "getSubscriptionStatus failed: ${it.message}") }
     }
-
 }

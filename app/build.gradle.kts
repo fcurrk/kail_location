@@ -28,8 +28,8 @@ android {
             abiFilters += listOf("arm64-v8a", "armeabi-v7a")
         }
 
-        buildConfigField("String", "ADMIN_API_URL", "\"https://adminkaillocation.kaillocation.xyz/admin-api\"")
-        buildConfigField("String", "APP_API_URL", "\"https://adminkaillocation.kaillocation.xyz/app-api\"")
+        buildConfigField("String", "ADMIN_API_URL", "\"http://127.0.0.1:8080/admin-api\"")
+        buildConfigField("String", "APP_API_URL", "\"http://127.0.0.1:8080/app-api\"")
     }
 
     externalNativeBuild {
