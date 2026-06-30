@@ -1,6 +1,8 @@
 [versions]
 agp = "8.13.2"
 kotlin = "2.2.0"
+# 添加 KSP 版本 - 针对 Kotlin 2.2.0
+ksp = "2.2.0-1.0.11"  # 或者使用 2.2.0-1.0.10
 coreKtx = "1.10.1"
 junit = "4.13.2"
 junitVersion = "1.1.5"
@@ -41,3 +43,5 @@ kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 android-library = { id = "com.android.library", version.ref = "agp" }
+# 添加 KSP 插件
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
