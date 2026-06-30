@@ -1,3 +1,5 @@
+val buildDirPath = layout.buildDirectory.get().asFile
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -49,9 +51,7 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
-    kotlinOptions {
-        jvmTarget = "11"
-    }
+
     buildFeatures {
         compose = true
         viewBinding = true
@@ -78,7 +78,7 @@ android {
 tasks.whenTaskAdded {
     if (name == "mergeDebugNativeLibs") {
         doFirst {
-            val cmakeDebugDir = file("${buildDir}/intermediates/cxx/Debug")
+            val cmakeDebugDir = file("${buildDirPath}/intermediates/cxx/Debug")
             if (cmakeDebugDir.exists()) {
                 cmakeDebugDir.listFiles()?.forEach { hashDir ->
                     if (hashDir.isDirectory) {
@@ -86,7 +86,7 @@ tasks.whenTaskAdded {
                         if (arm64Exe.exists()) {
                             copy {
                                 from(arm64Exe)
-                                into("${buildDir}/intermediates/merged_native_libs/debug/out/lib/arm64-v8a/")
+                                into("${buildDirPath}/intermediates/merged_native_libs/debug/out/lib/arm64-v8a/")
                                 rename { "libkail_inject.so" }
                             }
                         }
@@ -94,7 +94,7 @@ tasks.whenTaskAdded {
                         if (armExe.exists()) {
                             copy {
                                 from(armExe)
-                                into("${buildDir}/intermediates/merged_native_libs/debug/out/lib/armeabi-v7a/")
+                                into("${buildDirPath}/intermediates/merged_native_libs/debug/out/lib/armeabi-v7a/")
                                 rename { "libkail_inject.so" }
                             }
                         }
@@ -105,9 +105,9 @@ tasks.whenTaskAdded {
     }
     if (name == "mergeReleaseNativeLibs") {
         doFirst {
-            val cmakeReleaseDir = file("${buildDir}/intermediates/cxx/RelWithDebInfo")
+            val cmakeReleaseDir = file("${buildDirPath}/intermediates/cxx/RelWithDebInfo")
             if (!cmakeReleaseDir.exists()) {
-                val altDir = file("${buildDir}/intermediates/cxx/Release")
+                val altDir = file("${buildDirPath}/intermediates/cxx/Release")
                 if (altDir.exists()) {
                     altDir.listFiles()?.forEach { hashDir ->
                         if (hashDir.isDirectory) {
@@ -115,7 +115,7 @@ tasks.whenTaskAdded {
                             if (arm64Exe.exists()) {
                                 copy {
                                     from(arm64Exe)
-                                    into("${buildDir}/intermediates/merged_native_libs/release/out/lib/arm64-v8a/")
+                                    into("${buildDirPath}/intermediates/merged_native_libs/release/out/lib/arm64-v8a/")
                                     rename { "libkail_inject.so" }
                                 }
                             }
@@ -123,7 +123,7 @@ tasks.whenTaskAdded {
                             if (armExe.exists()) {
                                 copy {
                                     from(armExe)
-                                    into("${buildDir}/intermediates/merged_native_libs/release/out/lib/armeabi-v7a/")
+                                    into("${buildDirPath}/intermediates/merged_native_libs/release/out/lib/armeabi-v7a/")
                                     rename { "libkail_inject.so" }
                                 }
                             }
@@ -137,7 +137,7 @@ tasks.whenTaskAdded {
                         if (arm64Exe.exists()) {
                             copy {
                                 from(arm64Exe)
-                                into("${buildDir}/intermediates/merged_native_libs/release/out/lib/arm64-v8a/")
+                                into("${buildDirPath}/intermediates/merged_native_libs/release/out/lib/arm64-v8a/")
                                 rename { "libkail_inject.so" }
                             }
                         }
@@ -145,7 +145,7 @@ tasks.whenTaskAdded {
                         if (armExe.exists()) {
                             copy {
                                 from(armExe)
-                                into("${buildDir}/intermediates/merged_native_libs/release/out/lib/armeabi-v7a/")
+                                into("${buildDirPath}/intermediates/merged_native_libs/release/out/lib/armeabi-v7a/")
                                 rename { "libkail_inject.so" }
                             }
                         }
@@ -156,8 +156,8 @@ tasks.whenTaskAdded {
     }
     if (name == "stripDebugDebugSymbols") {
         doLast {
-            val mergedDir = file("${buildDir}/intermediates/merged_native_libs/debug/out/lib")
-            val strippedDir = file("${buildDir}/intermediates/stripped_native_libs/debug/stripDebugDebugSymbols/out/lib")
+            val mergedDir = file("${buildDirPath}/intermediates/merged_native_libs/debug/out/lib")
+            val strippedDir = file("${buildDirPath}/intermediates/stripped_native_libs/debug/stripDebugDebugSymbols/out/lib")
             if (mergedDir.exists() && strippedDir.exists()) {
                 listOf("arm64-v8a", "armeabi-v7a").forEach { abi ->
                     val src = file("${mergedDir.absolutePath}/$abi/libkail_inject.so")
@@ -174,8 +174,8 @@ tasks.whenTaskAdded {
     }
     if (name == "stripReleaseDebugSymbols") {
         doLast {
-            val mergedDir = file("${buildDir}/intermediates/merged_native_libs/release/out/lib")
-            val strippedDir = file("${buildDir}/intermediates/stripped_native_libs/release/stripReleaseDebugSymbols/out/lib")
+            val mergedDir = file("${buildDirPath}/intermediates/merged_native_libs/release/out/lib")
+            val strippedDir = file("${buildDirPath}/intermediates/stripped_native_libs/release/stripReleaseDebugSymbols/out/lib")
             if (mergedDir.exists() && strippedDir.exists()) {
                 listOf("arm64-v8a", "armeabi-v7a").forEach { abi ->
                     val src = file("${mergedDir.absolutePath}/$abi/libkail_inject.so")
@@ -256,9 +256,9 @@ androidComponents {
                 outDir.get().asFile.mkdirs()
 
                 val classDirs = listOf(
-                    file("${buildDir}/intermediates/javac/${variant.name}/classes"),
-                    file("${buildDir}/intermediates/javac/${variant.name}/compile${variantNameCap}JavaWithJavac/classes"),
-                    file("${buildDir}/tmp/kotlin-classes/${variant.name}")
+                    file("${buildDirPath}/intermediates/javac/${variant.name}/classes"),
+                    file("${buildDirPath}/intermediates/javac/${variant.name}/compile${variantNameCap}JavaWithJavac/classes"),
+                    file("${buildDirPath}/tmp/kotlin-classes/${variant.name}")
                 ).filter { it.exists() }
 
                 if (classDirs.isEmpty()) {
@@ -266,7 +266,7 @@ androidComponents {
                     return@doLast
                 }
 
-                val staging = file("${buildDir}/tmp/inject_slim_${variant.name}")
+                val staging = file("${buildDirPath}/tmp/inject_slim_${variant.name}")
                 staging.deleteRecursively()
                 staging.mkdirs()
 
@@ -291,7 +291,7 @@ androidComponents {
 
                 // D8 wants a jar (or .class with --classpath). Pack the staging
                 // tree into a jar first.
-                val stagingJar = file("${buildDir}/tmp/inject_slim_${variant.name}.jar")
+                val stagingJar = file("${buildDirPath}/tmp/inject_slim_${variant.name}.jar")
                 if (stagingJar.exists()) stagingJar.delete()
                 ant.invokeMethod("jar", mapOf(
                     "destfile" to stagingJar.absolutePath,
@@ -309,9 +309,9 @@ androidComponents {
                 // classes become actual dex output.
                 val cpJars = mutableListOf<java.io.File>()
                 listOf(
-                    file("${buildDir}/intermediates/javac/${variant.name}/classes"),
-                    file("${buildDir}/intermediates/javac/${variant.name}/compile${variantNameCap}JavaWithJavac/classes"),
-                    file("${buildDir}/tmp/kotlin-classes/${variant.name}")
+                    file("${buildDirPath}/intermediates/javac/${variant.name}/classes"),
+                    file("${buildDirPath}/intermediates/javac/${variant.name}/compile${variantNameCap}JavaWithJavac/classes"),
+                    file("${buildDirPath}/tmp/kotlin-classes/${variant.name}")
                 ).filter { it.exists() }.forEach { cpJars.add(it) }
 
                 val cmd = mutableListOf(
@@ -351,11 +351,11 @@ androidComponents {
                     val sourceAssets = file("src/main/assets")
                     sourceAssets.mkdirs()
                     dst.copyTo(file("${sourceAssets.absolutePath}/inject.dex"), overwrite = true)
-                    val mergedAssets = file("${buildDir}/intermediates/assets/${variant.name}/merge${variantNameCap}Assets")
+                    val mergedAssets = file("${buildDirPath}/intermediates/assets/${variant.name}/merge${variantNameCap}Assets")
                     if (mergedAssets.exists()) {
                         dst.copyTo(file("${mergedAssets.absolutePath}/inject.dex"), overwrite = true)
                     }
-                    val mergedAssetsAlt = file("${buildDir}/intermediates/merged_assets/${variant.name}/merge${variantNameCap}Assets/out")
+                    val mergedAssetsAlt = file("${buildDirPath}/intermediates/merged_assets/${variant.name}/merge${variantNameCap}Assets/out")
                     if (mergedAssetsAlt.exists()) {
                         dst.copyTo(file("${mergedAssetsAlt.absolutePath}/inject.dex"), overwrite = true)
                     }
@@ -379,11 +379,11 @@ androidComponents {
                     val sourceAssets = file("src/main/assets")
                     sourceAssets.mkdirs()
                     src.copyTo(file("${sourceAssets.absolutePath}/inject.dex"), overwrite = true)
-                    val mergedAssets = file("${buildDir}/intermediates/assets/${variant.name}/merge${variantNameCap}Assets")
+                    val mergedAssets = file("${buildDirPath}/intermediates/assets/${variant.name}/merge${variantNameCap}Assets")
                     if (mergedAssets.exists()) {
                         src.copyTo(file("${mergedAssets.absolutePath}/inject.dex"), overwrite = true)
                     }
-                    val mergedAssetsAlt = file("${buildDir}/intermediates/merged_assets/${variant.name}/merge${variantNameCap}Assets/out")
+                    val mergedAssetsAlt = file("${buildDirPath}/intermediates/merged_assets/${variant.name}/merge${variantNameCap}Assets/out")
                     if (mergedAssetsAlt.exists()) {
                         src.copyTo(file("${mergedAssetsAlt.absolutePath}/inject.dex"), overwrite = true)
                     }

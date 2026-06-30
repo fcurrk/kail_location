@@ -42,7 +42,7 @@ fun DrawerHeader(version: String) {
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = "�汾 $version",
+                    text = "Ver：$version",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onPrimaryContainer
                 )
