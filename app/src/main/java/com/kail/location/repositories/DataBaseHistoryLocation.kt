@@ -5,6 +5,9 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import com.kail.location.utils.KailLog
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 /**
  * 历史定位数据的 SQLite 辅助类。
@@ -30,12 +33,25 @@ class DataBaseHistoryLocation(context: Context) : SQLiteOpenHelper(context, DB_N
      * @param newVersion 新版本号。
      */
     override fun onUpgrade(sqLiteDatabase: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
-        val sql = "DROP TABLE IF EXISTS $TABLE_NAME"
-        sqLiteDatabase.execSQL(sql)
-        onCreate(sqLiteDatabase)
+        if (oldVersion < 2) {
+            try {
+                sqLiteDatabase.execSQL("ALTER TABLE $TABLE_NAME ADD COLUMN $DB_COLUMN_FAVORITE INTEGER NOT NULL DEFAULT 0")
+            } catch (e: Exception) {
+                KailLog.e(null, "DataBaseHistoryLocation", "onUpgrade: add favorite column failed: ${e.message}")
+            }
+        }
     }
 
     companion object {
+        @Volatile
+        var refreshVersion = 0L
+        private val _refreshSignal = MutableStateFlow(0L)
+        val refreshSignal: StateFlow<Long> = _refreshSignal.asStateFlow()
+
+        fun notifyChanged() {
+            refreshVersion = System.currentTimeMillis()
+            _refreshSignal.value = refreshVersion
+        }
         const val TABLE_NAME = "HistoryLocation"
         const val DB_COLUMN_ID = "DB_COLUMN_ID"
         const val DB_COLUMN_LOCATION = "DB_COLUMN_LOCATION"
@@ -44,13 +60,15 @@ class DataBaseHistoryLocation(context: Context) : SQLiteOpenHelper(context, DB_N
         const val DB_COLUMN_TIMESTAMP = "DB_COLUMN_TIMESTAMP"
         const val DB_COLUMN_LONGITUDE_CUSTOM = "DB_COLUMN_LONGITUDE_CUSTOM"
         const val DB_COLUMN_LATITUDE_CUSTOM = "DB_COLUMN_LATITUDE_CUSTOM"
+        const val DB_COLUMN_FAVORITE = "DB_COLUMN_FAVORITE"
 
-        private const val DB_VERSION = 1
+        private const val DB_VERSION = 2
         private const val DB_NAME = "HistoryLocation.db"
         private const val CREATE_TABLE = "create table if not exists " + TABLE_NAME +
                 " (DB_COLUMN_ID INTEGER PRIMARY KEY AUTOINCREMENT, DB_COLUMN_LOCATION TEXT, " +
                 "DB_COLUMN_LONGITUDE_WGS84 TEXT NOT NULL, DB_COLUMN_LATITUDE_WGS84 TEXT NOT NULL, " +
-                "DB_COLUMN_TIMESTAMP BIGINT NOT NULL, DB_COLUMN_LONGITUDE_CUSTOM TEXT NOT NULL, DB_COLUMN_LATITUDE_CUSTOM TEXT NOT NULL)"
+                "DB_COLUMN_TIMESTAMP BIGINT NOT NULL, DB_COLUMN_LONGITUDE_CUSTOM TEXT NOT NULL, DB_COLUMN_LATITUDE_CUSTOM TEXT NOT NULL, " +
+                "DB_COLUMN_FAVORITE INTEGER NOT NULL DEFAULT 0)"
 
         /**
          * 保存历史定位记录。
@@ -62,7 +80,6 @@ class DataBaseHistoryLocation(context: Context) : SQLiteOpenHelper(context, DB_N
         @JvmStatic
         fun saveHistoryLocation(sqLiteDatabase: SQLiteDatabase, contentValues: ContentValues) {
             try {
-                // 先删除原来的记录，再插入新记录
                 val longitudeWgs84 = contentValues.getAsString(DB_COLUMN_LONGITUDE_WGS84)
                 val latitudeWgs84 = contentValues.getAsString(DB_COLUMN_LATITUDE_WGS84)
                 sqLiteDatabase.delete(
@@ -105,6 +122,7 @@ class DataBaseHistoryLocation(context: Context) : SQLiteOpenHelper(context, DB_N
             contentValues.put(DB_COLUMN_TIMESTAMP, timestamp)
             contentValues.put(DB_COLUMN_LONGITUDE_CUSTOM, lonCustom)
             contentValues.put(DB_COLUMN_LATITUDE_CUSTOM, latCustom)
+            contentValues.put(DB_COLUMN_FAVORITE, 0)
             saveHistoryLocation(sqLiteDatabase, contentValues)
         }
 
@@ -123,6 +141,17 @@ class DataBaseHistoryLocation(context: Context) : SQLiteOpenHelper(context, DB_N
                 sqLiteDatabase.update(TABLE_NAME, contentValues, "$DB_COLUMN_ID = ?", arrayOf(locID))
             } catch (e: Exception) {
                 KailLog.e(null, "DataBaseHistoryLocation", "DATABASE: update error", e)
+            }
+        }
+
+        @JvmStatic
+        fun updateFavorite(sqLiteDatabase: SQLiteDatabase, id: Int, isFavorite: Boolean) {
+            try {
+                val contentValues = ContentValues()
+                contentValues.put(DB_COLUMN_FAVORITE, if (isFavorite) 1 else 0)
+                sqLiteDatabase.update(TABLE_NAME, contentValues, "$DB_COLUMN_ID = ?", arrayOf(id.toString()))
+            } catch (e: Exception) {
+                KailLog.e(null, "DataBaseHistoryLocation", "DATABASE: update favorite error", e)
             }
         }
     }

@@ -46,6 +46,8 @@ class JoystickViewModel(application: Application) : AndroidViewModel(application
     private val _markLocation = MutableStateFlow<LatLng?>(null)
     val markLocation: StateFlow<LatLng?> = _markLocation.asStateFlow()
 
+
+
     private val _speed = MutableStateFlow(1.2)
     val speed: StateFlow<Double> = _speed.asStateFlow()
 
@@ -133,7 +135,7 @@ class JoystickViewModel(application: Application) : AndroidViewModel(application
     fun search(query: String, city: String?) {
         if (query.isNotEmpty()) {
             suggestionSearch.requestSuggestion(
-                SuggestionSearchOption().keyword(query).city(city ?: "")
+                SuggestionSearchOption().keyword(query).city(city ?: getApplication<Application>().getString(R.string.vm_search_city))
             )
         } else {
             _searchResults.value = emptyList()
@@ -146,11 +148,16 @@ class JoystickViewModel(application: Application) : AndroidViewModel(application
             try {
                 val dbHelper = DataBaseHistoryLocation(getApplication())
                 val db = dbHelper.readableDatabase
-                val cursor = db.query(
-                    DataBaseHistoryLocation.TABLE_NAME, null,
-                    "${DataBaseHistoryLocation.DB_COLUMN_ID} > ?", arrayOf("0"),
-                    null, null, "${DataBaseHistoryLocation.DB_COLUMN_TIMESTAMP} DESC"
-                )
+
+                val hasFavCol = try {
+                    val p = db.rawQuery("PRAGMA table_info(${DataBaseHistoryLocation.TABLE_NAME})", null)
+                    var found = false
+                    while (p.moveToNext()) { if (p.getString(1) == DataBaseHistoryLocation.DB_COLUMN_FAVORITE) { found = true; break } }
+                    p.close(); found
+                } catch (_: Exception) { false }
+
+                val orderCol = if (hasFavCol) "${DataBaseHistoryLocation.DB_COLUMN_FAVORITE} DESC," else ""
+                val cursor = db.rawQuery("SELECT * FROM ${DataBaseHistoryLocation.TABLE_NAME} WHERE ${DataBaseHistoryLocation.DB_COLUMN_ID} > 0 ORDER BY $orderCol ${DataBaseHistoryLocation.DB_COLUMN_TIMESTAMP} DESC", null)
 
                 while (cursor.moveToNext()) {
                     val item = mutableMapOf<String, Any>()
@@ -161,6 +168,7 @@ class JoystickViewModel(application: Application) : AndroidViewModel(application
                     val timestamp = cursor.getLong(4)
                     val bdLng = cursor.getString(5)
                     val bdLat = cursor.getString(6)
+                    val isFav = if (hasFavCol) cursor.getInt(7) == 1 else false
 
                     val doubleLng = BigDecimal(lng).setScale(11, RoundingMode.HALF_UP).toDouble()
                     val doubleLat = BigDecimal(lat).setScale(11, RoundingMode.HALF_UP).toDouble()
@@ -172,6 +180,7 @@ class JoystickViewModel(application: Application) : AndroidViewModel(application
                     item[HistoryActivity.KEY_TIME] = GoUtils.timeStamp2Date(timestamp.toString())
                     item[HistoryActivity.KEY_LNG_LAT_WGS] = String.format(getApplication<Application>().getString(R.string.history_vm_coord_wgs84), doubleLng, doubleLat)
                     item[HistoryActivity.KEY_LNG_LAT_CUSTOM] = String.format(getApplication<Application>().getString(R.string.history_vm_coord_bd09), doubleBdLng, doubleBdLat)
+                    item["isFavorite"] = isFav
                     records.add(item)
                 }
                 cursor.close()
@@ -188,8 +197,24 @@ class JoystickViewModel(application: Application) : AndroidViewModel(application
         if (mark != null) {
             val wgs = MapUtils.bd2wgs(mark.longitude, mark.latitude)
             actionListener.onPositionInfo(wgs[0], wgs[1], _altitude.value)
-            setWindowType(WindowType.JOYSTICK)
+            saveLocationToHistory(wgs[0], wgs[1])
             _markLocation.value = null
+        }
+    }
+
+    private fun saveLocationToHistory(lng: Double, lat: Double) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val bd = MapUtils.wgs2bd(lng, lat)
+                val dbHelper = DataBaseHistoryLocation(getApplication())
+                val db = dbHelper.writableDatabase
+                DataBaseHistoryLocation.addHistoryLocation(
+                    db, "", lng.toString(), lat.toString(),
+                    (System.currentTimeMillis() / 1000).toString(),
+                    bd[0].toString(), bd[1].toString()
+                )
+                db.close()
+            } catch (_: Exception) {}
         }
     }
 
@@ -205,6 +230,47 @@ class JoystickViewModel(application: Application) : AndroidViewModel(application
             setWindowType(WindowType.JOYSTICK)
         } catch (e: Exception) {
             KailLog.e(getApplication(), "JOYSTICK", "Error selecting history: ${e.message}")
+        }
+    }
+
+    fun toggleHistoryFavorite(id: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val record = _historyRecords.value.find { it[HistoryActivity.KEY_ID] == id } ?: return@launch
+                val current = (record["isFavorite"] as? Boolean) ?: false
+                val dbHelper = DataBaseHistoryLocation(getApplication())
+                val db = dbHelper.writableDatabase
+                DataBaseHistoryLocation.updateFavorite(db, id.toIntOrNull() ?: return@launch, !current)
+                db.close()
+                DataBaseHistoryLocation.notifyChanged()
+                fetchHistoryRecords()
+            } catch (_: Exception) {}
+        }
+    }
+
+    fun renameHistoryRecord(id: String, newName: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val dbHelper = DataBaseHistoryLocation(getApplication())
+                val db = dbHelper.writableDatabase
+                DataBaseHistoryLocation.updateHistoryLocation(db, id, newName)
+                db.close()
+                DataBaseHistoryLocation.notifyChanged()
+                fetchHistoryRecords()
+            } catch (_: Exception) {}
+        }
+    }
+
+    fun deleteHistoryRecord(id: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val dbHelper = DataBaseHistoryLocation(getApplication())
+                val db = dbHelper.writableDatabase
+                db.delete(DataBaseHistoryLocation.TABLE_NAME, "${DataBaseHistoryLocation.DB_COLUMN_ID}=?", arrayOf(id))
+                db.close()
+                DataBaseHistoryLocation.notifyChanged()
+                fetchHistoryRecords()
+            } catch (_: Exception) {}
         }
     }
 

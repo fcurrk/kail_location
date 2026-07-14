@@ -1,6 +1,6 @@
 apply plugin: 'com.android.library'
 
-// ✅ 添加 buildDirPath 定义
+// 添加 buildDirPath 定义
 def buildDirPath = layout.buildDirectory.get().asFile
 
 android {
@@ -76,9 +76,8 @@ android {
             useLegacyPackaging true
         }
     }
-    
-    // ✅ 改回 lintOptions（保持兼容）
     lintOptions {
+
         checkReleaseBuilds false
         abortOnError false
         warningsAsErrors false
