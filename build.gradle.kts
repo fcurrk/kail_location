@@ -6,7 +6,7 @@ extra["compileSdkVersion"] = 36
 extra["minSdk"] = 27
 extra["targetSdkVersion"] = 36
 extra["versionCode"] = 37
-extra["versionName"] = "1.6.5260715"
+extra["versionName"] = "1.6.6260715"
 
 plugins {
     alias(libs.plugins.android.application) apply false

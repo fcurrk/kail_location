@@ -17,8 +17,8 @@ android {
         applicationId = "com.mini.location"
         minSdk = 27
         targetSdk = 36
-        versionCode = 38
-        versionName = "1.6.5260715"
+        versionCode = 39
+        versionName = "1.6.6260718"
         val defaultKey = System.getenv("BAIDU_MAP_DEFAULT_KEY") ?: ""
         buildConfigField("String", "DEFAULT_BAIDU_MAP_KEY", "\"$defaultKey\"")
 

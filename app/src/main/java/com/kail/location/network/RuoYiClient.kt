@@ -236,18 +236,16 @@ object RuoYiClient {
             val plans = mutableListOf<SubscriptionPlan>()
             for (i in 0 until arr.length()) {
                 val item = arr.getJSONObject(i)
-                plans.add(
-                    SubscriptionPlan(
-                        id = item.getLong("id"),
-                        name = item.getString("name"),
-                        description = item.optString("description", ""),
-                        price = item.getInt("price"),
-                        currency = item.optString("currency", "CNY"),
-                        billingInterval = item.optString("billingInterval", "month"),
-                        billingIntervalCount = item.optInt("billingIntervalCount", 1),
-                        trialDays = item.optInt("trialDays", 0)
-                    )
-                )
+                plans.add(SubscriptionPlan(
+                    id = item.getLong("id"),
+                    name = item.getString("name"),
+                    description = item.optString("description", ""),
+                    price = item.getInt("price"),
+                    currency = item.optString("currency", "CNY"),
+                    billingInterval = item.optString("billingInterval", "month"),
+                    billingIntervalCount = item.optInt("billingIntervalCount", 1),
+                    trialDays = item.optInt("trialDays", 0)
+                ))
             }
             KailLog.i(null, TAG, "getPlans: http=${response.code} code=$respCode count=${plans.size}")
             plans
@@ -287,15 +285,13 @@ object RuoYiClient {
             val list = mutableListOf<NoticeInfo>()
             for (i in 0 until arr.length()) {
                 val item = arr.getJSONObject(i)
-                list.add(
-                    NoticeInfo(
-                        id = item.getLong("id"),
-                        title = item.optString("title", ""),
-                        type = item.optInt("type", 0),
-                        content = item.optString("content", ""),
-                        createTime = item.optString("createTime", "")
-                    )
-                )
+                list.add(NoticeInfo(
+                    id = item.getLong("id"),
+                    title = item.optString("title", ""),
+                    type = item.optInt("type", 0),
+                    content = item.optString("content", ""),
+                    createTime = item.optString("createTime", "")
+                ))
             }
             list
         }.onFailure { KailLog.w(null, TAG, "getNoticeList failed: ${it.message}") }
@@ -336,4 +332,5 @@ object RuoYiClient {
             status
         }.onFailure { KailLog.w(null, TAG, "getSubscriptionStatus failed: ${it.message}") }
     }
+
 }

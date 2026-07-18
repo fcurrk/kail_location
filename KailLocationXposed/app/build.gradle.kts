@@ -10,12 +10,13 @@ android {
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.kail.locationxposed"
+        applicationId = "com.mini.locationxposed"
         minSdk = 29
         targetSdk = 36
-        versionCode = 38
-        versionName = "1.6.5"
-
+        versionCode = 39
+        versionName = "1.6.6260718"
+        val defaultKey = System.getenv("BAIDU_MAP_DEFAULT_KEY") ?: ""
+        buildConfigField("String", "DEFAULT_BAIDU_MAP_KEY", "\"$defaultKey\"")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -29,11 +30,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = "17"
     }
     buildFeatures {
         compose = true
