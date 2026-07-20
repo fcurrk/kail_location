@@ -75,12 +75,23 @@ jobs:
           echo "ANDROID_SIGN_TOOL_VERSION=$BUILD_TOOL_VERSION" >> $GITHUB_ENV
           echo "Last build tool version is: $BUILD_TOOL_VERSION"
 
+      # ============ 获取 APK 文件名 ============
+      - name: Get APK filenames
+        id: get_apk_names
+        run: |
+          MAIN_APK=$(ls app/build/outputs/apk/release/MiniLocation_*_release.apk | head -1)
+          XPOSED_APK=$(ls app/build/outputs/apk/release/MiniLocationXposed_*_release.apk | head -1)
+          echo "MAIN_APK=$(basename $MAIN_APK)" >> $GITHUB_OUTPUT
+          echo "XPOSED_APK=$(basename $XPOSED_APK)" >> $GITHUB_OUTPUT
+          echo "Main APK: $(basename $MAIN_APK)"
+          echo "Xposed APK: $(basename $XPOSED_APK)"
+
       # ============ 签名主 APK ============
       - name: Sign Main APK
         uses: r0adkll/sign-android-release@v1
-        id: sign_main_apk
         with:
           releaseDirectory: app/build/outputs/apk/release
+          releaseFilename: ${{ steps.get_apk_names.outputs.MAIN_APK }}
           signingKeyBase64: ${{ secrets.ANDROID_SIGNING_KEY }}
           alias: ${{ secrets.ANDROID_ALIAS }}
           keyStorePassword: ${{ secrets.ANDROID_KEY_STORE_PASSWORD }}
@@ -91,9 +102,9 @@ jobs:
       # ============ 签名 Xposed APK ============
       - name: Sign Xposed APK
         uses: r0adkll/sign-android-release@v1
-        id: sign_xposed_apk
         with:
           releaseDirectory: app/build/outputs/apk/release
+          releaseFilename: ${{ steps.get_apk_names.outputs.XPOSED_APK }}
           signingKeyBase64: ${{ secrets.ANDROID_SIGNING_KEY }}
           alias: ${{ secrets.ANDROID_ALIAS }}
           keyStorePassword: ${{ secrets.ANDROID_KEY_STORE_PASSWORD }}
