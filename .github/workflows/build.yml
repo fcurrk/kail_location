@@ -36,21 +36,49 @@ jobs:
       - name: chmod gradlew
         run: chmod +x gradlew
 
-      - name: Build APK
+      # ============ 编译主项目 ============
+      - name: Build Main APK
         env:
           BAIDU_MAP_DEFAULT_KEY: ${{ secrets.BAIDU_MAP_DEFAULT_KEY }}
         run: ./gradlew assembleRelease
 
+      # ============ 编译 Xposed 子模块 ============
+      - name: chmod gradlew (Xposed)
+        run: chmod +x KailLocationXposed/gradlew
+
+      - name: Build Xposed APK
+        env:
+          BAIDU_MAP_DEFAULT_KEY: ${{ secrets.BAIDU_MAP_DEFAULT_KEY }}
+        working-directory: KailLocationXposed
+        run: ./gradlew assembleRelease
+
+      # ============ 复制 Xposed APK 到主目录 ============
+      - name: Copy Xposed APK to release directory
+        run: |
+          # 检查 Xposed APK 是否存在
+          if ! ls KailLocationXposed/app/build/outputs/apk/release/*.apk 1> /dev/null 2>&1; then
+            echo "Xposed APK not found!"
+            exit 1
+          fi
+          
+          # 复制到主目录（文件名已经不同，不会覆盖）
+          cp KailLocationXposed/app/build/outputs/apk/release/*.apk app/build/outputs/apk/release/
+          
+          echo "All APKs in release directory:"
+          ls -la app/build/outputs/apk/release/
+
+      # ============ 设置签名工具版本 ============
       - name: Setup sign tool version variable
         shell: bash
         run: |
           BUILD_TOOL_VERSION=$(ls /usr/local/lib/android/sdk/build-tools/ | tail -n 1)
           echo "ANDROID_SIGN_TOOL_VERSION=$BUILD_TOOL_VERSION" >> $GITHUB_ENV
-          echo Last build tool version is: $BUILD_TOOL_VERSION
+          echo "Last build tool version is: $BUILD_TOOL_VERSION"
 
-      - name: Sign APK
+      # ============ 签名主 APK ============
+      - name: Sign Main APK
         uses: r0adkll/sign-android-release@v1
-        id: sign_apk
+        id: sign_main_apk
         with:
           releaseDirectory: app/build/outputs/apk/release
           signingKeyBase64: ${{ secrets.ANDROID_SIGNING_KEY }}
@@ -58,13 +86,26 @@ jobs:
           keyStorePassword: ${{ secrets.ANDROID_KEY_STORE_PASSWORD }}
           keyPassword: ${{ secrets.ANDROID_KEY_PASSWORD }}
         env:
-          # env.ANDROID_SIGN_TOOL_VERSION is set by Step "Setup sign tool version variable"
           BUILD_TOOLS_VERSION: ${{ env.ANDROID_SIGN_TOOL_VERSION }}
 
-      - name: Update
+      # ============ 签名 Xposed APK ============
+      - name: Sign Xposed APK
+        uses: r0adkll/sign-android-release@v1
+        id: sign_xposed_apk
+        with:
+          releaseDirectory: app/build/outputs/apk/release
+          signingKeyBase64: ${{ secrets.ANDROID_SIGNING_KEY }}
+          alias: ${{ secrets.ANDROID_ALIAS }}
+          keyStorePassword: ${{ secrets.ANDROID_KEY_STORE_PASSWORD }}
+          keyPassword: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        env:
+          BUILD_TOOLS_VERSION: ${{ env.ANDROID_SIGN_TOOL_VERSION }}
+
+      # ============ 上传 ============
+      - name: Upload APKs
         uses: actions/upload-artifact@v4
         with:
           name: kaillocation-release
-          path: app/build/outputs/apk/release/*.apk
+          path: app/build/outputs/apk/release/*-signed.apk
           if-no-files-found: error
           retention-days: 1

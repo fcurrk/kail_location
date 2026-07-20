@@ -20,6 +20,16 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    applicationVariants.all {
+        if (buildType.name == "release") {
+            outputs.all {
+                val version = defaultConfig.versionName
+                (this as com.android.build.gradle.internal.api.ApkVariantOutputImpl).outputFileName = 
+                    "MiniLocationXposed_${version}_${buildType.name}.apk"
+            }
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false
