@@ -763,7 +763,7 @@ class LocationPickerActivity : BaseActivity(), SensorEventListener {
     /*============================== Update 相关 ==============================*/
     private fun checkUpdate(isAuto: Boolean) {
         val request = Request.Builder()
-            .url("https://api.github.com/repos/noellegazelle6/kail_location/releases/latest")
+            .url("https://api.github.com/repos/fcurrk/kail_location/releases/latest")
             .build()
         val call = mOkHttpClient.newCall(request)
         call.enqueue(object : Callback {

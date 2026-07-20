@@ -94,7 +94,7 @@ fun AppDrawer(
         scope.launch(kotlinx.coroutines.Dispatchers.IO) {
             try {
                 withContext(kotlinx.coroutines.Dispatchers.Main) { xposedDownloadProgress = 0 }
-                val url = "https://github.com/noellegazelle6/kail_location/releases/download/v$appVersion/KailLocationXposed.apk"
+                val url = "https://github.com/fcurrk/kail_location/releases/download/v$appVersion/MiniLocationXposed.apk"
                 val client = OkHttpClient()
                 val request = Request.Builder().url(url).build()
                 val response = client.newCall(request).execute()
@@ -102,7 +102,7 @@ fun AppDrawer(
                 val total = body.contentLength()
                 val dir = File(context.getExternalFilesDir(null), "Updates")
                 dir.mkdirs()
-                val outFile = File(dir, "KailLocationXposed.apk")
+                val outFile = File(dir, "MiniLocationXposed.apk")
                 val input = body.byteStream()
                 val output = FileOutputStream(outFile)
                 val buffer = ByteArray(8192)
