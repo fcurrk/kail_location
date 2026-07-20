@@ -116,7 +116,7 @@ jobs:
       - name: Clean and keep only signed APKs
         run: |
           cd app/build/outputs/apk/release
-          rm -f *-aligned-signed.apk *-signed-signed.apk
+          rm -f *-aligned-signed.* *-signed-signed.* *-aligned-aligned.* *-signed-aligned.*
           echo "Final APKs:"
           ls -la
 
@@ -125,6 +125,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: kaillocation-release
-          path: app/build/outputs/apk/release/*.apk
+          path: app/build/outputs/apk/release/*signed.apk
           if-no-files-found: error
           retention-days: 1
