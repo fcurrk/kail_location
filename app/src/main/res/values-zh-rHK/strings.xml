@@ -73,6 +73,8 @@
     <string name="joystick_map_tips">搜尋或點擊地圖位置</string>
     <string name="joystick_history_tips">搜尋或點擊歷史位置</string>
     <string name="joystick_history">歷史紀錄</string>
+    <string name="joystick_history_favorites">收藏</string>
+    <string name="joystick_history_normal">歷史位置</string>
     <string name="joystick_map">地圖</string>
     <string name="joystick_move">移動</string>
     <string name="joystick_walk">步行</string>
@@ -180,6 +182,8 @@
     <string name="route_plan_coord_error">請輸入有效的緯度,經度</string>
     <string name="route_plan_ok">確定</string>
     <string name="route_plan_cancel">取消</string>
+    <string name="route_plan_history">歷史位置</string>
+    <string name="route_plan_history_title">選擇歷史位置</string>
 
     <string name="setting_sim_scheme">感測器模擬方案</string>
     <string name="setting_sim_fourier">傅立葉級數</string>

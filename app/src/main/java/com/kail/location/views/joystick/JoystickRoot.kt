@@ -79,7 +79,10 @@ fun JoystickRoot(
                 onRename = { id, name -> viewModel.renameHistoryRecord(id, name) },
                 onDelete = { id -> viewModel.deleteHistoryRecord(id) },
                 isPinned = isPinned,
-                onTogglePin = { viewModel.toggleHistoryPin() }
+                onTogglePin = { viewModel.toggleHistoryPin() },
+                onMoveFavUp = { id -> viewModel.moveFavorite(id, up = true) },
+                onMoveFavDown = { id -> viewModel.moveFavorite(id, up = false) },
+                onSetFavoriteOrder = { ids -> viewModel.setFavoriteOrder(ids) }
             )
         }
         JoystickViewModel.WindowType.ROUTE_CONTROL -> {

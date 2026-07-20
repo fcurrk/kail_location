@@ -93,6 +93,8 @@
     <string name="joystick_map_tips">Search or tap map location</string>
     <string name="joystick_history_tips">Search or tap history location</string>
     <string name="joystick_history">History</string>
+    <string name="joystick_history_favorites">Favorites</string>
+    <string name="joystick_history_normal">History</string>
     <string name="joystick_map">Map</string>
     <string name="joystick_move">Move</string>
     <string name="joystick_walk">Walk</string>
@@ -203,6 +205,8 @@
     <string name="route_plan_coord_error">Please enter valid latitude,longitude</string>
     <string name="route_plan_ok">OK</string>
     <string name="route_plan_cancel">Cancel</string>
+    <string name="route_plan_history">History</string>
+    <string name="route_plan_history_title">Select History Location</string>
 
     <!-- Settings -->
     <string name="setting_sim_scheme">Sensor Simulation Scheme</string>

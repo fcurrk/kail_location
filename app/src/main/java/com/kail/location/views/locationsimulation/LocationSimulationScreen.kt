@@ -3,7 +3,14 @@ package com.kail.location.views.locationsimulation
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.zIndex
+import kotlin.math.abs
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -28,17 +35,18 @@ import com.kail.location.viewmodels.LocationSimulationViewModel
 import kotlinx.coroutines.launch
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.window.Dialog
 import com.kail.location.views.common.DrawerHeader
 import androidx.compose.ui.platform.LocalContext
 import android.content.Intent
 import android.net.Uri
 import com.kail.location.views.common.UpdateDialog
 import com.kail.location.models.HistoryRecord
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.clickable
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.Settings
 
 import com.kail.location.views.common.AppDrawer
 
@@ -83,12 +91,15 @@ fun LocationSimulationScreen(
     onNavigate: (Int) -> Unit,
     onAddLocation: () -> Unit,
     appVersion: String,
-    onCheckUpdate: () -> Unit
+    onCheckUpdate: () -> Unit,
+    onMoveFavUp: (Int) -> Unit = {},
+    onMoveFavDown: (Int) -> Unit = {},
+    onSetFavoriteOrder: (List<Int>) -> Unit = {}
 ) {
     val context = LocalContext.current
     var renameTarget by remember { mutableStateOf<HistoryRecord?>(null) }
     var renameText by remember { mutableStateOf("") }
-
+    var showSettingsDialog by remember { mutableStateOf(false) }
 
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
@@ -233,54 +244,17 @@ fun LocationSimulationScreen(
                                     fontWeight = FontWeight.Bold
                                 )
                                 Spacer(modifier = Modifier.width(4.dp))
-                                // Placeholder icon
                                 Switch(
                                     checked = isJoystickEnabled,
                                     onCheckedChange = onJoystickToggle,
                                     modifier = Modifier.scale(0.8f)
                                 )
-                            }
-
-                            if (runMode == "root" || runMode == "xposed" || runMode == "sandbox") {
-                                HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.SpaceBetween,
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Text(stringResource(R.string.route_sim_step_text), fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurface)
-                                    Switch(
-                                        checked = stepSimulationEnabled,
-                                        onCheckedChange = onStepSimulationToggle,
-                                        colors = SwitchDefaults.colors(
-                                            checkedThumbColor = Color.White,
-                                            checkedTrackColor = MaterialTheme.colorScheme.primary
-                                        ),
-                                        modifier = Modifier.scale(0.8f)
-                                    )
-                                }
-
-                                if (stepSimulationEnabled) {
-                                    Spacer(modifier = Modifier.height(8.dp))
-                                    val stepsPerSecond = (stepCadenceSpm / 60f)
-                                    val kmh = (stepsPerSecond * 0.7f * 3.6f)
-                                    Row(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        horizontalArrangement = Arrangement.SpaceBetween,
-                                        verticalAlignment = Alignment.CenterVertically
-                                    ) {
-                                        Text(stringResource(R.string.route_sim_cadence_text), fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurface)
-                                        Text(stringResource(R.string.route_sim_cadence_format, stepCadenceSpm.toInt(), ((kmh * 10).toInt() / 10f)), fontSize = 14.sp, color = MaterialTheme.colorScheme.primary)
-                                    }
-                                    Slider(
-                                        value = stepCadenceSpm,
-                                        onValueChange = { onStepCadenceChange((it + 0.5f).toInt().toFloat()) },
-                                        valueRange = 60f..180f,
-                                        steps = 11,
-                                        colors = SliderDefaults.colors(
-                                            thumbColor = MaterialTheme.colorScheme.primary,
-                                            activeTrackColor = MaterialTheme.colorScheme.primary
-                                        )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                IconButton(onClick = { showSettingsDialog = true }) {
+                                    Icon(
+                                        Icons.Default.Settings,
+                                        contentDescription = "Settings",
+                                        tint = MaterialTheme.colorScheme.primary
                                     )
                                 }
                             }
@@ -301,88 +275,114 @@ fun LocationSimulationScreen(
                     }
                 }
 
-                // History List Header
-                PaddingValues(horizontal = 16.dp, vertical = 8.dp).let {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.padding(it)
-                    ) {
-                        Text(
-                            text = stringResource(R.string.loc_sim_history_title),
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = Color.Gray
-                        )
-                        Spacer(modifier = Modifier.weight(1f))
-                        Icon(
-                            painter = painterResource(R.drawable.ic_search),
-                            contentDescription = "Search",
-                            tint = Color.Gray
-                        )
-                    }
+                val favRecords = historyRecords.filter { it.isFavorite }
+                    .sortedWith(compareBy<com.kail.location.models.HistoryRecord> { it.favoriteOrder }.thenByDescending { it.favoriteTime })
+                var selectedTab by remember { mutableStateOf(0) }
+
+                TabRow(selectedTabIndex = selectedTab, modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
+                    Tab(selected = selectedTab == 0, onClick = { selectedTab = 0 }, text = { Text(stringResource(R.string.joystick_history_favorites), fontSize = 14.sp) })
+                    Tab(selected = selectedTab == 1, onClick = { selectedTab = 1 }, text = { Text(stringResource(R.string.joystick_history_normal), fontSize = 14.sp) })
                 }
 
-                if (historyRecords.isEmpty()) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .weight(1f),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Icon(
-                                painter = painterResource(R.drawable.ic_history),
-                                contentDescription = null,
-                                modifier = Modifier.size(64.dp),
-                                tint = Color.LightGray
-                            )
-                            Spacer(modifier = Modifier.height(16.dp))
-                            Text(
-                                text = stringResource(R.string.loc_sim_add_tips),
-                                color = Color.Gray,
-                                style = MaterialTheme.typography.bodyMedium
-                            )
+                if (selectedTab == 0) {
+                    var draggedId by remember { mutableStateOf<Int?>(null) }
+                    var dragOffset by remember { mutableStateOf(0f) }
+                    val localFavList = remember { mutableStateListOf<HistoryRecord>() }
+
+                    LaunchedEffect(favRecords) {
+                        if (draggedId == null) {
+                            localFavList.clear()
+                            localFavList.addAll(favRecords)
+                        }
+                    }
+
+                    if (localFavList.isEmpty()) {
+                        Box(modifier = Modifier.weight(1f).fillMaxWidth(), contentAlignment = Alignment.Center) {
+                            Text(stringResource(R.string.history_idle), color = Color.Gray)
+                        }
+                    } else {
+                        val scrollState = rememberScrollState()
+                        Column(
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxWidth()
+                                .verticalScroll(scrollState)
+                                .pointerInput(Unit) {
+                                    val cardHeightPx = 72.dp.toPx()
+                                    val gapPx = 8.dp.toPx()
+                                    val itemUnitPx = cardHeightPx + gapPx
+
+                                    detectDragGesturesAfterLongPress(
+                                        onDragStart = { offset ->
+                                            val contentY = offset.y + scrollState.value
+                                            val idx = (contentY / itemUnitPx).toInt().coerceIn(0, localFavList.lastIndex)
+                                            localFavList.clear()
+                                            localFavList.addAll(favRecords)
+                                            draggedId = localFavList.getOrNull(idx)?.id
+                                            dragOffset = 0f
+                                        },
+                                        onDrag = { change, dragAmount ->
+                                            change.consume()
+                                            if (draggedId == null) return@detectDragGesturesAfterLongPress
+                                            dragOffset += dragAmount.y
+                                            val curIdx = localFavList.indexOfFirst { it.id == draggedId }
+                                            if (curIdx < 0) return@detectDragGesturesAfterLongPress
+                                            val thresholdPx = cardHeightPx * 0.92f
+                                            if (abs(dragOffset) >= thresholdPx) {
+                                                val dir = if (dragOffset > 0) 1 else -1
+                                                val targetIdx = (curIdx + dir).coerceIn(0, localFavList.lastIndex)
+                                                if (targetIdx != curIdx) {
+                                                    val temp = localFavList[curIdx]
+                                                    localFavList[curIdx] = localFavList[targetIdx]
+                                                    localFavList[targetIdx] = temp
+                                                }
+                                                dragOffset -= dir * thresholdPx
+                                            }
+                                        },
+                                        onDragEnd = {
+                                            if (draggedId != null) {
+                                                onSetFavoriteOrder(localFavList.map { it.id })
+                                            }
+                                            draggedId = null
+                                            dragOffset = 0f
+                                        },
+                                        onDragCancel = {
+                                            draggedId = null
+                                            dragOffset = 0f
+                                        }
+                                    )
+                                }
+                                .padding(horizontal = 16.dp, vertical = 8.dp)
+                        ) {
+                            localFavList.forEachIndexed { _, record ->
+                                val isDragged = draggedId == record.id
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .zIndex(if (isDragged) 1f else 0f)
+                                        .graphicsLayer {
+                                            translationY = if (isDragged) dragOffset else 0f
+                                            shadowElevation = if (isDragged) 16f else 0f
+                                        }
+                                ) {
+                                    historyRecordCard(
+                                        record = record,
+                                        isFav = true,
+                                        showMoveButtons = false,
+                                        onToggleFavorite = { onToggleFavorite(record.id) },
+                                        onRename = { renameTarget = record; renameText = record.name },
+                                        onRecordSelect = onRecordSelect,
+                                        onRecordDelete = { onRecordDelete(record.id) }
+                                    )
+                                }
+                                Spacer(modifier = Modifier.height(8.dp))
+                            }
                         }
                     }
                 } else {
-                    LazyColumn(
-                        modifier = Modifier.weight(1f),
-                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        items(historyRecords) { record ->
-                            Card(
-                                colors = CardDefaults.cardColors(),
-                                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-                                shape = RoundedCornerShape(8.dp),
-                                modifier = Modifier.fillMaxWidth().clickable { onRecordSelect(record) }
-                            ) {
-                                Row(
-                                    modifier = Modifier.padding(16.dp),
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.SpaceBetween
-                                ) {
-                                    Column(modifier = Modifier.weight(1f)) {
-                                        Text(text = record.name, fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurface)
-                                        Text(text = record.displayTime, fontSize = 12.sp, color = Color.Gray)
-                                    }
-                                    Row {
-                                        IconButton(onClick = { onToggleFavorite(record.id) }) {
-                                            Icon(
-                                                Icons.Default.Star,
-                                                contentDescription = "Favorite",
-                                                tint = if (record.isFavorite) Color(0xFFFFB300) else Color.Gray,
-                                                modifier = Modifier.graphicsLayer(alpha = if (record.isFavorite) 1f else 0.4f)
-                                            )
-                                        }
-                                        IconButton(onClick = { renameTarget = record; renameText = record.name }) {
-                                            Icon(Icons.Default.Edit, contentDescription = "Rename", tint = MaterialTheme.colorScheme.primary)
-                                        }
-                                        IconButton(onClick = { onRecordDelete(record.id) }) {
-                                            Icon(Icons.Default.Delete, contentDescription = "Delete", tint = Color.Red)
-                                        }
-                                    }
-                                }
-                            }
+                    LazyColumn(modifier = Modifier.weight(1f), contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)) {
+                        items(historyRecords.sortedByDescending { it.timestamp }, key = { "all_${it.id}" }) { record ->
+                            historyRecordCard(record = record, isFav = record.isFavorite, showMoveButtons = false, onToggleFavorite = onToggleFavorite, onRename = { renameTarget = it; renameText = it.name }, onRecordSelect = onRecordSelect, onRecordDelete = onRecordDelete)
                         }
                     }
                 }
@@ -415,5 +415,158 @@ fun LocationSimulationScreen(
                 TextButton(onClick = { renameTarget = null }) { Text(stringResource(R.string.common_cancel)) }
             }
         )
+    }
+
+    if (showSettingsDialog) {
+        LocationSettingsDialog(
+            stepSimulationEnabled = stepSimulationEnabled,
+            stepCadenceSpm = stepCadenceSpm,
+            runMode = runMode,
+            onDismiss = { showSettingsDialog = false },
+            onStepSimulationToggle = onStepSimulationToggle,
+            onStepCadenceChange = onStepCadenceChange
+        )
+    }
+}
+
+@Composable
+fun historyRecordCard(
+    record: com.kail.location.models.HistoryRecord,
+    isFav: Boolean,
+    showMoveButtons: Boolean = false,
+    onToggleFavorite: (Int) -> Unit,
+    onRename: (com.kail.location.models.HistoryRecord) -> Unit,
+    onRecordSelect: (com.kail.location.models.HistoryRecord) -> Unit,
+    onRecordDelete: (Int) -> Unit,
+    onMoveUp: () -> Unit = {},
+    onMoveDown: () -> Unit = {}
+) {
+    Card(
+        colors = CardDefaults.cardColors(),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        shape = RoundedCornerShape(8.dp),
+        modifier = Modifier.fillMaxWidth().clickable { onRecordSelect(record) }
+    ) {
+        Row(
+            modifier = Modifier.padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            if (showMoveButtons) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(end = 8.dp)) {
+                    Text("▲", modifier = Modifier.clickable(onClick = onMoveUp).padding(2.dp), fontSize = 12.sp, color = Color.Gray)
+                    Text("▼", modifier = Modifier.clickable(onClick = onMoveDown).padding(2.dp), fontSize = 12.sp, color = Color.Gray)
+                }
+            }
+            Column(modifier = Modifier.weight(1f)) {
+                Text(text = record.name, fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurface)
+                Text(text = record.displayTime, fontSize = 12.sp, color = Color.Gray)
+            }
+            Row {
+                IconButton(onClick = { onToggleFavorite(record.id) }) {
+                    Icon(
+                        Icons.Default.Star,
+                        contentDescription = "Favorite",
+                        tint = if (isFav) Color(0xFFFFB300) else Color.Gray,
+                        modifier = Modifier.graphicsLayer(alpha = if (isFav) 1f else 0.4f)
+                    )
+                }
+                IconButton(onClick = { onRename(record) }) {
+                    Icon(Icons.Default.Edit, contentDescription = "Rename", tint = MaterialTheme.colorScheme.primary)
+                }
+                IconButton(onClick = { onRecordDelete(record.id) }) {
+                    Icon(Icons.Default.Delete, contentDescription = "Delete", tint = Color.Red)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun LocationSettingsDialog(
+    stepSimulationEnabled: Boolean,
+    stepCadenceSpm: Float,
+    runMode: String,
+    onDismiss: () -> Unit,
+    onStepSimulationToggle: (Boolean) -> Unit,
+    onStepCadenceChange: (Float) -> Unit
+) {
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val canUseStepFreq = runMode == "root" || runMode == "xposed" || runMode == "sandbox"
+
+    Dialog(onDismissRequest = onDismiss) {
+        Card(
+            shape = RoundedCornerShape(8.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                Text(
+                    text = stringResource(R.string.route_sim_speed_btn),
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        stringResource(R.string.route_sim_step_text),
+                        fontSize = 14.sp,
+                        color = if (canUseStepFreq) MaterialTheme.colorScheme.onSurface else Color.Gray
+                    )
+                    Switch(
+                        checked = stepSimulationEnabled,
+                        onCheckedChange = {
+                            if (!canUseStepFreq) {
+                                android.widget.Toast.makeText(
+                                    context,
+                                    context.getString(R.string.vm_step_root_required),
+                                    android.widget.Toast.LENGTH_SHORT
+                                ).show()
+                            } else {
+                                onStepSimulationToggle(it)
+                            }
+                        },
+                        enabled = canUseStepFreq,
+                        colors = SwitchDefaults.colors(
+                            checkedThumbColor = Color.White,
+                            checkedTrackColor = MaterialTheme.colorScheme.primary
+                        ),
+                        modifier = Modifier.scale(0.8f)
+                    )
+                }
+
+                if (stepSimulationEnabled) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    val stepsPerSecond = (stepCadenceSpm / 60f)
+                    val kmh = (stepsPerSecond * 0.7f * 3.6f)
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(stringResource(R.string.route_sim_cadence_text), fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurface)
+                        Text(stringResource(R.string.route_sim_cadence_format, stepCadenceSpm.toInt(), ((kmh * 10).toInt() / 10f)), fontSize = 14.sp, color = MaterialTheme.colorScheme.primary)
+                    }
+                    Slider(
+                        value = stepCadenceSpm,
+                        onValueChange = { onStepCadenceChange((it + 0.5f).toInt().toFloat()) },
+                        valueRange = 60f..180f,
+                        steps = 11,
+                        colors = SliderDefaults.colors(
+                            thumbColor = MaterialTheme.colorScheme.primary,
+                            activeTrackColor = MaterialTheme.colorScheme.primary
+                        )
+                    )
+                }
+            }
+        }
     }
 }
