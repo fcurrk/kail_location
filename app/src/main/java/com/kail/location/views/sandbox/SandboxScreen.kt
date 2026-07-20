@@ -666,33 +666,33 @@ fun SandboxSettingsDialog(
                         onClick = {}
                     )
                 }
-                SettingsActionRow(
-                    title = stringResource(R.string.sandbox_send_log),
-                    description = stringResource(R.string.sandbox_send_log_desc),
-                    onClick = {
-                        if (!isSendingLogs) {
-                            isSendingLogs = true
-                            try {
-                                SandboxSettingsManager.sendLogs(
-                                    object : top.niunaijun.blackbox.BlackBoxCore.LogSendListener {
-                                        override fun onSuccess() {
-                                            toastMessage = context.getString(R.string.sandbox_log_sent)
-                                            isSendingLogs = false
-                                        }
-                                        override fun onFailure(error: String?) {
-                                            toastMessage = context.getString(R.string.sandbox_log_failed, error ?: "")
-                                            isSendingLogs = false
-                                        }
-                                    }
-                                )
-                                toastMessage = context.getString(R.string.sandbox_log_sending)
-                            } catch (e: Exception) {
-                                toastMessage = context.getString(R.string.sandbox_log_failed, e.message ?: "")
-                                isSendingLogs = false
-                            }
-                        }
-                    }
-                )
+//                SettingsActionRow(
+//                    title = stringResource(R.string.sandbox_send_log),
+//                    description = stringResource(R.string.sandbox_send_log_desc),
+//                    onClick = {
+//                        if (!isSendingLogs) {
+//                            isSendingLogs = true
+//                            try {
+//                                SandboxSettingsManager.sendLogs(
+//                                    object : top.niunaijun.blackbox.BlackBoxCore.LogSendListener {
+//                                        override fun onSuccess() {
+//                                            toastMessage = context.getString(R.string.sandbox_log_sent)
+//                                            isSendingLogs = false
+//                                        }
+//                                        override fun onFailure(error: String?) {
+//                                            toastMessage = context.getString(R.string.sandbox_log_failed, error ?: "")
+//                                            isSendingLogs = false
+//                                        }
+//                                    }
+//                                )
+//                                toastMessage = context.getString(R.string.sandbox_log_sending)
+//                            } catch (e: Exception) {
+//                                toastMessage = context.getString(R.string.sandbox_log_failed, e.message ?: "")
+//                                isSendingLogs = false
+//                            }
+//                        }
+//                    }
+//                )
             }
         },
         confirmButton = {
