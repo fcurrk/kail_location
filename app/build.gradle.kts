@@ -17,8 +17,8 @@ android {
         applicationId = "com.mini.location"
         minSdk = 27
         targetSdk = 36
-        versionCode = 39
-        versionName = "1.6.6260724"
+        versionCode = 40
+        versionName = "1.6.7260727"
         val defaultKey = System.getenv("BAIDU_MAP_DEFAULT_KEY") ?: ""
         buildConfigField("String", "DEFAULT_BAIDU_MAP_KEY", "\"$defaultKey\"")
 
@@ -38,13 +38,13 @@ android {
         }
     }
 
-    // 在这里添加自定义 APK 名称
+    // 鍦ㄨ繖閲屾坊鍔犺嚜瀹氫箟 APK 鍚嶇О
     applicationVariants.all {
         if (buildType.name == "release") {
             outputs.all {
                 val version = defaultConfig.versionName
                 // val date = SimpleDateFormat("yyyyMMdd", Locale.getDefault()).format(Date())
-                // 示例：MiniLocation_1.6.6260720_release.apk
+                // 绀轰緥锛歁iniLocation_1.6.6260720_release.apk
                 (this as com.android.build.gradle.internal.api.ApkVariantOutputImpl).outputFileName = 
                     "MiniLocation_${version}_${buildType.name}.apk"
             }

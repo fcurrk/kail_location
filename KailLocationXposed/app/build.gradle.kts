@@ -13,8 +13,8 @@ android {
         applicationId = "com.mini.locationxposed"
         minSdk = 29
         targetSdk = 36
-        versionCode = 39
-        versionName = "1.6.6260724"
+        versionCode = 40
+        versionName = "1.6.7260727"
         val defaultKey = System.getenv("BAIDU_MAP_DEFAULT_KEY") ?: ""
         buildConfigField("String", "DEFAULT_BAIDU_MAP_KEY", "\"$defaultKey\"")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
