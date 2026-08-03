@@ -120,6 +120,47 @@ object KailLog {
     fun i(context: Context?, tag: String, message: String, isHighFrequency: Boolean = false) = log(context, tag, message, isHighFrequency, 'i')
     fun w(context: Context?, tag: String, message: String, isHighFrequency: Boolean = false) = log(context, tag, message, isHighFrequency, 'w')
     fun e(context: Context?, tag: String, message: String, isHighFrequency: Boolean = false) = log(context, tag, message, isHighFrequency, 'e')
+    
+    // 添加java中调用默认第四参数
+    
+    @JvmStatic
+    @JvmOverloads
+    fun v(context: Context?, tag: String, message: String, isHighFrequency: Boolean = true) = 
+        log(context, tag, message, isHighFrequency, 'v')
+    
+    @JvmStatic
+    @JvmOverloads
+    fun d(context: Context?, tag: String, message: String, isHighFrequency: Boolean = false) = 
+        log(context, tag, message, isHighFrequency, 'd')
+    
+    @JvmStatic
+    @JvmOverloads
+    fun i(context: Context?, tag: String, message: String, isHighFrequency: Boolean = false) = 
+        log(context, tag, message, isHighFrequency, 'i')
+    
+    @JvmStatic
+    @JvmOverloads
+    fun w(context: Context?, tag: String, message: String, isHighFrequency: Boolean = false) = 
+        log(context, tag, message, isHighFrequency, 'w')
+    
+    @JvmStatic
+    @JvmOverloads
+    fun e(context: Context?, tag: String, message: String, isHighFrequency: Boolean = false) = 
+        log(context, tag, message, isHighFrequency, 'e')
+    
+    // 带异常的方式
+    @JvmStatic
+    @JvmOverloads
+    fun e(context: Context?, tag: String, message: String, tr: Throwable, isHighFrequency: Boolean = false) {
+        log(context, tag, "$message\n${stackTraceString(tr)}", isHighFrequency, 'e')
+    }
+    
+    @JvmStatic
+    @JvmOverloads
+    fun w(context: Context?, tag: String, message: String, tr: Throwable, isHighFrequency: Boolean = false) {
+        log(context, tag, "$message\n${stackTraceString(tr)}", isHighFrequency, 'w')
+    }
+
 
     /** 关键诊断日志：始终输出到 Logcat，文件落盘仍遵循日志开关。 */
     fun persist(context: Context?, tag: String, message: String, level: Char = 'i') {
