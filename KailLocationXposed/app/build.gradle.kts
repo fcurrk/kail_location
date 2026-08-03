@@ -14,7 +14,7 @@ android {
         minSdk = 29
         targetSdk = 36
         versionCode = 40
-        versionName = "1.6.7260727"
+        versionName = "1.6.8260803"
         val defaultKey = System.getenv("BAIDU_MAP_DEFAULT_KEY") ?: ""
         buildConfigField("String", "DEFAULT_BAIDU_MAP_KEY", "\"$defaultKey\"")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"

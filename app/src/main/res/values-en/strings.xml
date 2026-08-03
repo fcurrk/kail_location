@@ -7,7 +7,7 @@
     <string name="history_no_record">No history records</string>
     <string name="app_author">kail</string>
     <string name="app_email">kailkali23143@gmail.com</string>
-    <string name="app_statement">For learning purposes only. Use at your own risk!</string>
+    <string name="app_statement">Mini custom tool, for testing only</string>
     <string name="app_service_tips">MiniLocation service is running</string>
     <string name="app_agreement">User Agreement</string>
     <string name="app_agreement_content">"1. This software is designed for learning Android development and does not collect any user data."
