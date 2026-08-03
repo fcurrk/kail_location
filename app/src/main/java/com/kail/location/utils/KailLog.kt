@@ -115,14 +115,8 @@ object KailLog {
         }
     }
 
-    // 原调用方式,java报错
-//    fun v(context: Context?, tag: String, message: String, isHighFrequency: Boolean = true) = log(context, tag, message, isHighFrequency, 'v')
-//    fun d(context: Context?, tag: String, message: String, isHighFrequency: Boolean = false) = log(context, tag, message, isHighFrequency, 'd')
-//    fun i(context: Context?, tag: String, message: String, isHighFrequency: Boolean = false) = log(context, tag, message, isHighFrequency, 'i')
-//    fun w(context: Context?, tag: String, message: String, isHighFrequency: Boolean = false) = log(context, tag, message, isHighFrequency, 'w')
-//    fun e(context: Context?, tag: String, message: String, isHighFrequency: Boolean = false) = log(context, tag, message, isHighFrequency, 'e')
-
-    // java中调用默认第四参数
+    // ==================== 日志方法（支持 Java 和 Kotlin 调用） ====================
+    
     @JvmStatic
     @JvmOverloads
     fun v(context: Context?, tag: String, message: String, isHighFrequency: Boolean = true) = 
@@ -148,7 +142,8 @@ object KailLog {
     fun e(context: Context?, tag: String, message: String, isHighFrequency: Boolean = false) = 
         log(context, tag, message, isHighFrequency, 'e')
     
-    // 带异常的方式
+    // ==================== 带异常的日志方法 ====================
+    
     @JvmStatic
     @JvmOverloads
     fun e(context: Context?, tag: String, message: String, tr: Throwable, isHighFrequency: Boolean = false) {
@@ -160,7 +155,6 @@ object KailLog {
     fun w(context: Context?, tag: String, message: String, tr: Throwable, isHighFrequency: Boolean = false) {
         log(context, tag, "$message\n${stackTraceString(tr)}", isHighFrequency, 'w')
     }
-
 
     /** 关键诊断日志：始终输出到 Logcat，文件落盘仍遵循日志开关。 */
     fun persist(context: Context?, tag: String, message: String, level: Char = 'i') {
@@ -197,15 +191,6 @@ object KailLog {
         if (shouldWriteFile(resolvedContext)) {
             saveLogBlockToPrivateFile(resolvedContext, tag, block)
         }
-    }
-
-    /** 记录异常并附带完整堆栈，便于定位。 */
-    fun e(context: Context?, tag: String, message: String, tr: Throwable, isHighFrequency: Boolean = false) {
-        log(context, tag, "$message\n${stackTraceString(tr)}", isHighFrequency, 'e')
-    }
-
-    fun w(context: Context?, tag: String, message: String, tr: Throwable, isHighFrequency: Boolean = false) {
-        log(context, tag, "$message\n${stackTraceString(tr)}", isHighFrequency, 'w')
     }
 
     /**
