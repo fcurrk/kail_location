@@ -49,7 +49,7 @@ public final class Camera1PreviewCallbackHook {
                     }
                 }
             } catch (Throwable th) {
-                KailLog.INSTANCE.e(null, TAG, "onPreviewFrame hook", th);
+                KailLog.e(null, TAG, "onPreviewFrame hook", th);
             }
         }
         onPreviewFrame_bak(receiver, data, camera);

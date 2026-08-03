@@ -189,7 +189,7 @@ public final class MicAudioSource {
                     }
                 }
                 if (track < 0 || format == null) {
-                    KailLog.INSTANCE.w(null, TAG, "no audio track in " + path);
+                    KailLog.w(null, TAG, "no audio track in " + path);
                     sleepQuiet(2000);
                     continue;
                 }
@@ -233,7 +233,7 @@ public final class MicAudioSource {
                     }
                 }
             } catch (Throwable th) {
-                KailLog.INSTANCE.e(null, TAG, "decodeLoop", th);
+                KailLog.e(null, TAG, "decodeLoop", th);
                 sleepQuiet(1000);
             } finally {
                 if (codec != null) {

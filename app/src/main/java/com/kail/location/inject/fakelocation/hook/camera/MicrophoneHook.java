@@ -64,9 +64,9 @@ public final class MicrophoneHook {
             } catch (Throwable ignored) { }
 
             installed = true;
-            KailLog.INSTANCE.i(null, TAG, "Microphone hooks installed");
+            KailLog.i(null, TAG, "Microphone hooks installed");
         } catch (Throwable th) {
-            KailLog.INSTANCE.e(null, TAG, "hook install failed", th);
+            KailLog.e(null, TAG, "hook install failed", th);
         }
     }
 

@@ -95,7 +95,7 @@ public final class CameraHookConfig {
             String json = new String(buf, 0, off, "UTF-8").trim();
             parseInto(json, cfg);
         } catch (Throwable th) {
-            KailLog.INSTANCE.e(null, TAG, "load config failed", th);
+            KailLog.e(null, TAG, "load config failed", th);
         }
         return cfg;
     }
