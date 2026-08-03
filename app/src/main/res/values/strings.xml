@@ -131,7 +131,7 @@
     <string name="nav_menu_upgrade">检测更新</string>
     <string name="nav_menu_feedback">问题反馈</string>
     <string name="nav_menu_contact">联系作者</string>
-    <string name="nav_app_tips">仅供学习使用，否则后果自负!</string>
+    <string name="nav_app_tips">Mini定制工具，请勿滥用，后果自负</string>
     <string name="nav_menu_sponsor">赞助作者</string>
     <string name="nav_menu_github">开源仓库</string>
     <string name="nav_menu_run_mode">运行模式</string>
