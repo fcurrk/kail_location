@@ -17,15 +17,15 @@ android {
         applicationId = "com.mini.location"
         minSdk = 27
         targetSdk = 36
-        versionCode = 40
-        versionName = "1.6.8260803"
+        versionCode = 43
+        versionName = "1.6.10260813"
         val defaultKey = System.getenv("BAIDU_MAP_DEFAULT_KEY") ?: ""
         buildConfigField("String", "DEFAULT_BAIDU_MAP_KEY", "\"$defaultKey\"")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         
         ndk {
-            abiFilters += listOf("arm64-v8a", "armeabi-v7a")
+            abiFilters += listOf("arm64-v8a", "armeabi-v7a", "x86_64")
         }
 
         buildConfigField("String", "ADMIN_API_URL", "\"http://127.0.0.1:8080/admin-api\"")
@@ -115,6 +115,14 @@ tasks.whenTaskAdded {
                                 rename { "libkail_inject.so" }
                             }
                         }
+                        val x64Exe = file("${hashDir.absolutePath}/obj/x86_64/kail_inject")
+                        if (x64Exe.exists()) {
+                            copy {
+                                from(x64Exe)
+                                into("${buildDirPath}/intermediates/merged_native_libs/debug/out/lib/x86_64/")
+                                rename { "libkail_inject.so" }
+                            }
+                        }
                     }
                 }
             }
@@ -144,6 +152,14 @@ tasks.whenTaskAdded {
                                     rename { "libkail_inject.so" }
                                 }
                             }
+                            val x64Exe = file("${hashDir.absolutePath}/obj/x86_64/kail_inject")
+                            if (x64Exe.exists()) {
+                                copy {
+                                    from(x64Exe)
+                                    into("${buildDirPath}/intermediates/merged_native_libs/release/out/lib/x86_64/")
+                                    rename { "libkail_inject.so" }
+                                }
+                            }
                         }
                     }
                 }
@@ -166,6 +182,14 @@ tasks.whenTaskAdded {
                                 rename { "libkail_inject.so" }
                             }
                         }
+                        val x64Exe = file("${hashDir.absolutePath}/obj/x86_64/kail_inject")
+                        if (x64Exe.exists()) {
+                            copy {
+                                from(x64Exe)
+                                into("${buildDirPath}/intermediates/merged_native_libs/release/out/lib/x86_64/")
+                                rename { "libkail_inject.so" }
+                            }
+                        }
                     }
                 }
             }
@@ -176,7 +200,7 @@ tasks.whenTaskAdded {
             val mergedDir = file("${buildDirPath}/intermediates/merged_native_libs/debug/out/lib")
             val strippedDir = file("${buildDirPath}/intermediates/stripped_native_libs/debug/stripDebugDebugSymbols/out/lib")
             if (mergedDir.exists() && strippedDir.exists()) {
-                listOf("arm64-v8a", "armeabi-v7a").forEach { abi ->
+                listOf("arm64-v8a", "armeabi-v7a", "x86_64").forEach { abi ->
                     val src = file("${mergedDir.absolutePath}/$abi/libkail_inject.so")
                     if (src.exists()) {
                         copy {
@@ -194,7 +218,7 @@ tasks.whenTaskAdded {
             val mergedDir = file("${buildDirPath}/intermediates/merged_native_libs/release/out/lib")
             val strippedDir = file("${buildDirPath}/intermediates/stripped_native_libs/release/stripReleaseDebugSymbols/out/lib")
             if (mergedDir.exists() && strippedDir.exists()) {
-                listOf("arm64-v8a", "armeabi-v7a").forEach { abi ->
+                listOf("arm64-v8a", "armeabi-v7a", "x86_64").forEach { abi ->
                     val src = file("${mergedDir.absolutePath}/$abi/libkail_inject.so")
                     if (src.exists()) {
                         copy {
@@ -441,9 +465,8 @@ dependencies {
     implementation(libs.material)
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("io.noties.markwon:core:4.6.2")
-
-    // ShadowHook
-    implementation("com.bytedance.android:shadowhook:1.0.9")
+    implementation("io.noties.markwon:image-coil:4.6.2")
+    implementation("io.coil-kt:coil:1.4.0")
 
     // Dobby
     implementation("io.github.vvb2060.ndk:dobby:1.2")
